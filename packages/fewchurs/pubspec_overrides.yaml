@@ -1,0 +1,3 @@
+dependency_overrides:
+  fewchurs_core:
+    path: ../fewchurs_core

@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  core:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        sdk: ['3.0.0', stable]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: ${{ matrix.sdk }}
+      - working-directory: packages/fewchurs_core
+        run: |
+          dart pub get
+          dart analyze --fatal-warnings
+          dart test
+
+  flutter:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flutter: ['3.10.6', stable]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter == 'stable' && '' || matrix.flutter }}
+          channel: stable
+      - working-directory: packages/fewchurs
+        run: |
+          flutter pub get
+          flutter analyze --no-fatal-infos
+          flutter test
+      - working-directory: packages/fewchurs/example
+        run: |
+          flutter pub get
+          flutter analyze --no-fatal-infos
