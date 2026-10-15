@@ -48,12 +48,12 @@ class FewchursFeatureCard extends StatelessWidget {
     final showStatus = feature.status != FeatureStatus.open;
 
     return Material(
-      color: t.surface,
+      color: selected
+          ? Color.alphaBlend(t.primary.withAlpha(0x1F), t.card)
+          : t.card,
       elevation: t.cardElevation,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(t.cardRadius),
-        side: BorderSide(
-            color: selected ? t.primary : t.border, width: selected ? 1.5 : 1),
       ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(

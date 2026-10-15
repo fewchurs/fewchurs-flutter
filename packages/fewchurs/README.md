@@ -44,14 +44,14 @@ dependencies:
     git:
       url: https://github.com/fewchurs/fewchurs-flutter.git
       path: packages/fewchurs
-      ref: v1.3.0
+      ref: v1.4.0
 
 dependency_overrides:
   fewchurs_core:
     git:
       url: https://github.com/fewchurs/fewchurs-flutter.git
       path: packages/fewchurs_core
-      ref: v1.3.0
+      ref: v1.4.0
 ```
 
 Then run:

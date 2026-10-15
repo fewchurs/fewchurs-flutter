@@ -34,8 +34,9 @@ class FewchursVoteButton extends StatelessWidget {
     final voted = state.voted;
     final filled = voted && style != VoteButtonStyle.minimal;
     final fg = filled ? t.onPrimary : (voted ? t.primary : t.onSurface);
-    final bg = filled ? t.primary : Colors.transparent;
-    final borderColor = voted ? t.primary : t.border;
+    final bg = filled
+        ? t.primary
+        : (style == VoteButtonStyle.minimal ? Colors.transparent : t.fill);
     final radius = style == VoteButtonStyle.pill ? 999.0 : t.buttonRadius;
 
     final icon = Icon(Icons.keyboard_arrow_up_rounded,
@@ -76,9 +77,6 @@ class FewchursVoteButton extends StatelessWidget {
           animationDuration: const Duration(milliseconds: 150),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radius),
-            side: style == VoteButtonStyle.minimal
-                ? BorderSide.none
-                : BorderSide(color: borderColor),
           ),
           clipBehavior: Clip.antiAlias,
           child: InkWell(

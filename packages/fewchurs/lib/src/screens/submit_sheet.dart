@@ -138,19 +138,8 @@ class _FewchursSubmitFormState extends State<FewchursSubmitForm> {
     String? helper,
     String? error,
   }) {
-    final radius = BorderRadius.circular(t.buttonRadius);
-    return InputDecoration(
-      labelText: label,
-      hintText: hint,
-      helperText: helper,
-      errorText: error,
-      border: OutlineInputBorder(borderRadius: radius),
-      enabledBorder: OutlineInputBorder(
-          borderRadius: radius, borderSide: BorderSide(color: t.border)),
-      focusedBorder: OutlineInputBorder(
-          borderRadius: radius,
-          borderSide: BorderSide(color: t.primary, width: 1.5)),
-    );
+    return fewchursInputDecoration(t,
+        label: label, hint: hint, helper: helper, error: error);
   }
 
   @override

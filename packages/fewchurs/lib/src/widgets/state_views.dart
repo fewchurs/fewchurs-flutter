@@ -31,9 +31,8 @@ class FewchursLoadingView extends StatelessWidget {
         itemBuilder: (_, __) => Container(
           padding: EdgeInsets.all(t.spacing),
           decoration: BoxDecoration(
-            color: t.surface,
+            color: t.card,
             borderRadius: BorderRadius.circular(t.cardRadius),
-            border: Border.all(color: t.border),
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -118,7 +117,7 @@ class FewchursErrorView extends StatelessWidget {
       title: s.error(error),
       action: onRetry == null
           ? null
-          : OutlinedButton(onPressed: onRetry, child: Text(s.retry)),
+          : TextButton(onPressed: onRetry, child: Text(s.retry)),
     );
   }
 }

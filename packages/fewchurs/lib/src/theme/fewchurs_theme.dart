@@ -281,6 +281,15 @@ class FewchursResolvedTheme {
 
   double get spacing => compact ? 10 : 14;
 
+  /// Subtle translucent fill for borderless controls such as text fields and
+  /// the vote button.
+  Color get fill => onSurface.withAlpha(0x0F);
+
+  /// Card color. Cards have no outline, so when [surface] matches the
+  /// background (the Material 3 default) they get a light tint instead.
+  Color get card =>
+      surface == background ? Color.alphaBlend(fill, background) : surface;
+
   Color statusColor(FeatureStatus status) =>
       statusColors[status] ?? statusColors[FeatureStatus.unknown]!;
 

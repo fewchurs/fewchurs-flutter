@@ -7,6 +7,39 @@ import '../l10n/fewchurs_strings.dart';
 import '../runtime.dart';
 import '../theme/fewchurs_theme.dart';
 
+/// Borderless filled text field. Only focus and errors draw an outline.
+InputDecoration fewchursInputDecoration(
+  FewchursResolvedTheme t, {
+  String? label,
+  String? hint,
+  String? helper,
+  String? error,
+  String? counter,
+  bool isDense = false,
+  EdgeInsetsGeometry? contentPadding,
+}) {
+  final radius = BorderRadius.circular(t.buttonRadius);
+  OutlineInputBorder outline(BorderSide side) =>
+      OutlineInputBorder(borderRadius: radius, borderSide: side);
+  return InputDecoration(
+    labelText: label,
+    hintText: hint,
+    helperText: helper,
+    errorText: error,
+    counterText: counter,
+    isDense: isDense,
+    contentPadding: contentPadding,
+    filled: true,
+    fillColor: t.fill,
+    border: outline(BorderSide.none),
+    enabledBorder: outline(BorderSide.none),
+    disabledBorder: outline(BorderSide.none),
+    focusedBorder: outline(BorderSide(color: t.primary, width: 1.5)),
+    errorBorder: outline(BorderSide(color: t.error)),
+    focusedErrorBorder: outline(BorderSide(color: t.error, width: 1.5)),
+  );
+}
+
 /// Makes the package's Material widgets safe to use anywhere: adds Material
 /// localizations when the app doesn't provide them (e.g. a `CupertinoApp`),
 /// a local [ScaffoldMessenger] for snack bars, and optional Esc-to-close.
@@ -204,10 +237,10 @@ class _EmailDialogState extends State<_EmailDialog> {
               keyboardType: TextInputType.emailAddress,
               autofillHints: const [AutofillHints.email],
               textInputAction: TextInputAction.done,
-              decoration: InputDecoration(
-                labelText: s.emailLabel,
-                errorText: _error,
-                border: const OutlineInputBorder(),
+              decoration: fewchursInputDecoration(
+                FewchursThemeData.of(context),
+                label: s.emailLabel,
+                error: _error,
               ),
               onChanged: (_) {
                 if (_error != null) setState(() => _error = null);

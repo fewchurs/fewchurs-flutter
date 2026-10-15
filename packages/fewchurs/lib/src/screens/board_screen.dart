@@ -222,6 +222,7 @@ class _FewchursBoardState extends State<FewchursBoard>
             isScrollable: _tabs.length > 3,
             labelColor: widget.showAppBar ? null : t.primary,
             indicatorColor: widget.showAppBar ? null : t.primary,
+            dividerColor: Colors.transparent,
             tabs: [for (final tab in _tabs) Tab(text: _tabLabel(s, tab))],
           );
 
@@ -242,7 +243,6 @@ class _FewchursBoardState extends State<FewchursBoard>
             width: math.min(480.0, constraints.maxWidth * 0.45),
             child: lists,
           ),
-          VerticalDivider(width: 1, thickness: 1, color: t.border),
           Expanded(
             child: selected == null
                 ? Center(

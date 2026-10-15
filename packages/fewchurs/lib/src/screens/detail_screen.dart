@@ -239,9 +239,7 @@ class _FewchursFeatureDetailState extends State<FewchursFeatureDetail> {
             ),
           ],
           if (allowComments) ...[
-            const SizedBox(height: 20),
-            Divider(color: t.border, height: 1),
-            const SizedBox(height: 16),
+            const SizedBox(height: 28),
             Text(
               '${s.comments} (${feature.commentCount})',
               style: t.titleStyle.copyWith(fontSize: 15),
@@ -278,10 +276,10 @@ class _FewchursFeatureDetailState extends State<FewchursFeatureDetail> {
             icon: icon,
             label: Text(s.following),
           )
-        : OutlinedButton.icon(
-            style: OutlinedButton.styleFrom(
+        : FilledButton.icon(
+            style: FilledButton.styleFrom(
+              backgroundColor: t.fill,
               foregroundColor: t.onSurface,
-              side: BorderSide(color: t.border),
               shape: shape,
               minimumSize: const Size(0, 44),
             ),
@@ -334,31 +332,20 @@ class _FewchursFeatureDetailState extends State<FewchursFeatureDetail> {
     final s = FewchursStrings.of(context);
     final t = FewchursThemeData.of(context);
     InputDecoration decoration(String hint, {String? counter}) =>
-        InputDecoration(
-          hintText: hint,
+        fewchursInputDecoration(
+          t,
+          hint: hint,
           isDense: true,
-          counterText: counter ?? '',
-          filled: true,
-          fillColor: t.background,
+          counter: counter ?? '',
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(t.buttonRadius),
-            borderSide: BorderSide(color: t.border),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(t.buttonRadius),
-            borderSide: BorderSide(color: t.border),
-          ),
         );
 
     return Material(
       color: t.surface,
       child: SafeArea(
         top: false,
-        child: Container(
-          decoration: BoxDecoration(
-              border: Border(top: BorderSide(color: t.border))),
+        child: Padding(
           padding: const EdgeInsets.fromLTRB(12, 10, 8, 10),
           child: ValueListenableBuilder<TextEditingValue>(
             valueListenable: _commentText,
