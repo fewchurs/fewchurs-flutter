@@ -135,12 +135,22 @@ You can present the board in three ways. All three share the same features: Top 
 Fewchurs.showBoard(context);
 ```
 
-### As a bottom sheet
+### As a sheet
 
 ```dart
 Fewchurs.showBoardSheet(context);
-Fewchurs.showBoardSheet(context, heightFactor: 0.8);
 ```
+
+The sheet adapts to the screen. On phones it's a bottom sheet. On screens 840 px and wider (web, desktop, tablets in landscape) it slides in from the side at full height, and requests and the submit form open inside it.
+
+```dart
+Fewchurs.showBoardSheet(context, heightFactor: 0.8);       // bottom sheet height on phones
+Fewchurs.showBoardSheet(context, sideSheetWidth: 480);     // side sheet width on wide screens
+Fewchurs.showBoardSheet(context, position: FewchursSheetPosition.side);   // always a side sheet
+Fewchurs.showBoardSheet(context, position: FewchursSheetPosition.bottom); // always a bottom sheet
+```
+
+The breakpoint is `BoardOptions.wideLayoutBreakpoint`.
 
 ### As a widget anywhere: a tab, a drawer page or a route
 
@@ -176,6 +186,8 @@ If the request was deleted, or is hidden by the board's plan, the user sees "Thi
 final feature = await showFewchursSubmitSheet(context); // null if dismissed
 ```
 
+It's a bottom sheet on phones and a centered dialog on screens 600 px and wider.
+
 ### `FewchursBoard` parameters
 
 | Parameter | Type | Default | Description |
@@ -191,7 +203,7 @@ final feature = await showFewchursSubmitSheet(context); // null if dismissed
 | `voteButtonBuilder` | `VoteButtonBuilder?` | — | Replaces the vote button. |
 | `statusChipBuilder` | `StatusChipBuilder?` | — | Replaces the status chip. |
 
-On wide screens (840 px and up by default: tablets, web and desktop), the board shows the list and the selected request side by side.
+On wide screens (840 px and up by default: tablets, web and desktop), the board shows the list and the selected request side by side, with the tabs above the list.
 
 ---
 

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:fewchurs_core/fewchurs_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -62,7 +64,7 @@ class FewchursHost extends StatelessWidget {
       result = CallbackShortcuts(
         bindings: {
           const SingleActivator(LogicalKeyboardKey.escape): () =>
-              Navigator.maybePop(context),
+              closeFewchursRoute(context),
         },
         child: Focus(autofocus: true, child: result),
       );
@@ -127,6 +129,97 @@ Route<T> fewchursRoute<T>(
   }
   return MaterialPageRoute<T>(
       builder: builder, fullscreenDialog: fullscreenDialog);
+}
+
+/// Pops the current route. When it's the first page of a side sheet's own
+/// navigator, closes the whole sheet instead.
+Future<void> closeFewchursRoute(BuildContext context) async {
+  final navigator = Navigator.maybeOf(context);
+  if (navigator == null) return;
+  if (navigator.canPop()) {
+    await navigator.maybePop();
+    return;
+  }
+  if (navigator.widget is _SideSheetNavigator) {
+    // Navigator.maybeOf would return this navigator itself; go one up.
+    await navigator.context
+        .findAncestorStateOfType<NavigatorState>()
+        ?.maybePop();
+  }
+}
+
+/// Slides [child] in from the end edge, full height, with its own navigator
+/// so pages opened from it stay inside the sheet.
+Future<T?> showFewchursSideSheet<T>(
+  BuildContext context, {
+  required WidgetBuilder builder,
+  double width = 440,
+}) {
+  final rootContext = Navigator.of(context, rootNavigator: true).context;
+  final themes = InheritedTheme.capture(from: context, to: rootContext);
+  final rtl = Directionality.of(context) == TextDirection.rtl;
+  return showGeneralDialog<T>(
+    context: context,
+    useRootNavigator: true,
+    barrierDismissible: true,
+    barrierLabel: 'Dismiss',
+    barrierColor: Colors.black54,
+    transitionDuration: const Duration(milliseconds: 280),
+    pageBuilder: (sheetContext, _, __) =>
+        themes.wrap(_SideSheet(width: width, builder: builder)),
+    transitionBuilder: (_, animation, __, child) => SlideTransition(
+      position: Tween<Offset>(
+        begin: Offset(rtl ? -1 : 1, 0),
+        end: Offset.zero,
+      ).animate(CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeOutCubic,
+        reverseCurve: Curves.easeInCubic,
+      )),
+      child: child,
+    ),
+  );
+}
+
+class _SideSheet extends StatelessWidget {
+  const _SideSheet({required this.width, required this.builder});
+
+  final double width;
+  final WidgetBuilder builder;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = FewchursThemeData.of(context);
+    final media = MediaQuery.of(context);
+    final w = math.min(width, media.size.width);
+    return Align(
+      alignment: AlignmentDirectional.centerEnd,
+      child: SizedBox(
+        width: w,
+        height: double.infinity,
+        child: Material(
+          color: t.background,
+          clipBehavior: Clip.antiAlias,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadiusDirectional.horizontal(
+              start: Radius.circular(t.sheetRadius),
+            ).resolve(Directionality.of(context)),
+          ),
+          // Report the sheet's width so the content lays out as on a phone.
+          child: MediaQuery(
+            data: media.copyWith(size: Size(w, media.size.height)),
+            child: _SideSheetNavigator(
+              onGenerateRoute: (_) => fewchursRoute<void>(context, builder),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SideSheetNavigator extends Navigator {
+  const _SideSheetNavigator({super.onGenerateRoute});
 }
 
 typedef EmailPromptResult = ({String email, bool remember});

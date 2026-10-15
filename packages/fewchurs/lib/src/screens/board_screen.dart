@@ -210,38 +210,55 @@ class _FewchursBoardState extends State<FewchursBoard>
     if (!Fewchurs.isConfigured) {
       return _NotConfigured(showAppBar: widget.showAppBar);
     }
+    return LayoutBuilder(
+      builder: (context, constraints) => _buildScaffold(
+        context,
+        constraints.maxWidth >= _options.wideLayoutBreakpoint,
+        constraints.maxWidth,
+      ),
+    );
+  }
+
+  Widget _buildScaffold(BuildContext context, bool wide, double width) {
     final s = FewchursStrings.of(context);
     final t = FewchursThemeData.of(context);
     final options = _options;
     final placement = options.allowSubmissions ? options.submitButton : null;
+    _isWide = wide;
+    // On wide screens the tabs sit above the list column, not the whole page.
+    final tabsInAppBar = widget.showAppBar && !wide;
 
     final tabBar = _tabController == null
         ? null
         : TabBar(
             controller: _tabController,
             isScrollable: _tabs.length > 3,
-            labelColor: widget.showAppBar ? null : t.primary,
-            indicatorColor: widget.showAppBar ? null : t.primary,
+            labelColor: tabsInAppBar ? null : t.primary,
+            indicatorColor: tabsInAppBar ? null : t.primary,
             dividerColor: Colors.transparent,
             tabs: [for (final tab in _tabs) Tab(text: _tabLabel(s, tab))],
           );
 
-    final body = LayoutBuilder(builder: (context, constraints) {
-      _isWide = constraints.maxWidth >= options.wideLayoutBreakpoint;
-      final lists = _tabController == null
-          ? _buildTab(_tabs.first, placement)
-          : TabBarView(
-              controller: _tabController,
-              children: [for (final tab in _tabs) _buildTab(tab, placement)],
-            );
-      if (!_isWide) return lists;
-
+    Widget body;
+    final lists = _tabController == null
+        ? _buildTab(_tabs.first, placement)
+        : TabBarView(
+            controller: _tabController,
+            children: [for (final tab in _tabs) _buildTab(tab, placement)],
+          );
+    if (!wide) {
+      body = tabsInAppBar || tabBar == null
+          ? lists
+          : Column(children: [tabBar, Expanded(child: lists)]);
+    } else {
       final selected = _selected;
-      return Row(
+      body = Row(
         children: [
           SizedBox(
-            width: math.min(480.0, constraints.maxWidth * 0.45),
-            child: lists,
+            width: math.min(480.0, width * 0.45),
+            child: tabBar == null
+                ? lists
+                : Column(children: [tabBar, Expanded(child: lists)]),
           ),
           Expanded(
             child: selected == null
@@ -263,7 +280,7 @@ class _FewchursBoardState extends State<FewchursBoard>
           ),
         ],
       );
-    });
+    }
 
     final scaffold = Scaffold(
       backgroundColor: t.background,
@@ -275,7 +292,7 @@ class _FewchursBoardState extends State<FewchursBoard>
                   ? IconButton(
                       icon: const Icon(Icons.close_rounded),
                       tooltip: s.close,
-                      onPressed: () => Navigator.maybePop(context),
+                      onPressed: () => closeFewchursRoute(context),
                     )
                   : null,
               actions: [
@@ -286,12 +303,10 @@ class _FewchursBoardState extends State<FewchursBoard>
                     onPressed: _openSubmit,
                   ),
               ],
-              bottom: tabBar,
+              bottom: tabsInAppBar ? tabBar : null,
             )
           : null,
-      body: widget.showAppBar || tabBar == null
-          ? body
-          : Column(children: [tabBar, Expanded(child: body)]),
+      body: body,
       floatingActionButton: placement == SubmitButtonPlacement.fab
           ? FloatingActionButton.extended(
               onPressed: _openSubmit,
@@ -302,9 +317,7 @@ class _FewchursBoardState extends State<FewchursBoard>
             )
           : null,
       floatingActionButtonLocation:
-          MediaQuery.sizeOf(context).width >= options.wideLayoutBreakpoint
-              ? FloatingActionButtonLocation.startFloat
-              : null,
+          wide ? FloatingActionButtonLocation.startFloat : null,
       bottomNavigationBar: placement == SubmitButtonPlacement.bottomBar
           ? SafeArea(
               top: false,

@@ -19,7 +19,7 @@ import 'screens/board_screen.dart';
 import 'theme/fewchurs_theme.dart';
 import 'widgets/adaptive.dart';
 
-const fewchursVersion = '1.4.1';
+const fewchursVersion = '1.5.0';
 
 /// Entry point: call [configure] once in `main()`, then [showBoard],
 /// [showBoardSheet] or embed a [FewchursBoard].
@@ -107,11 +107,31 @@ class Fewchurs {
     );
   }
 
+  /// Opens the board in a sheet. With [FewchursSheetPosition.adaptive] it's a
+  /// side sheet of [sideSheetWidth] on screens at least
+  /// `BoardOptions.wideLayoutBreakpoint` wide, and a bottom sheet of
+  /// [heightFactor] on phones. Requests and the submit form open inside the
+  /// side sheet.
   static Future<void> showBoardSheet(
     BuildContext context, {
     FewchursBoard board = const FewchursBoard(showCloseButton: true),
     double heightFactor = 0.92,
+    FewchursSheetPosition position = FewchursSheetPosition.adaptive,
+    double sideSheetWidth = 440,
   }) {
+    final breakpoint =
+        (board.options ?? _rt.config?.board)?.wideLayoutBreakpoint ??
+            const BoardOptions().wideLayoutBreakpoint;
+    final side = switch (position) {
+      FewchursSheetPosition.side => true,
+      FewchursSheetPosition.bottom => false,
+      FewchursSheetPosition.adaptive =>
+        MediaQuery.sizeOf(context).width >= breakpoint,
+    };
+    if (side) {
+      return showFewchursSideSheet<void>(context,
+          width: sideSheetWidth, builder: (_) => board);
+    }
     final radius = FewchursThemeData.of(context).sheetRadius;
     return showModalBottomSheet<void>(
       context: context,

@@ -9,10 +9,28 @@ import '../runtime.dart';
 import '../theme/fewchurs_theme.dart';
 import '../widgets/adaptive.dart';
 
-/// Opens the submit form in a bottom sheet. Returns the new feature, or
-/// `null` if the sheet was dismissed. The draft survives accidental dismissal.
+/// Opens the submit form: a bottom sheet on phones, a centered dialog on
+/// wider screens. Returns the new feature, or `null` if it was dismissed.
+/// The draft survives accidental dismissal.
 Future<Feature?> showFewchursSubmitSheet(BuildContext context) {
   final t = FewchursThemeData.of(context);
+  if (MediaQuery.sizeOf(context).width >= 600) {
+    return showDialog<Feature>(
+      context: context,
+      builder: (_) => Dialog(
+        backgroundColor: t.surface,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(t.sheetRadius)),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 560),
+          child: const FewchursHost(
+              closeOnEscape: true,
+              child: FewchursSubmitForm(showHandle: false)),
+        ),
+      ),
+    );
+  }
   return showModalBottomSheet<Feature>(
     context: context,
     isScrollControlled: true,
@@ -26,11 +44,15 @@ Future<Feature?> showFewchursSubmitSheet(BuildContext context) {
 }
 
 class FewchursSubmitForm extends StatefulWidget {
-  const FewchursSubmitForm({super.key, this.onSubmitted});
+  const FewchursSubmitForm(
+      {super.key, this.onSubmitted, this.showHandle = true});
 
   /// Called with the created feature. When null, the form pops its route
   /// with the feature as the result.
   final ValueChanged<Feature>? onSubmitted;
+
+  /// Shows the drag handle at the top. Off in dialogs.
+  final bool showHandle;
 
   @override
   State<FewchursSubmitForm> createState() => _FewchursSubmitFormState();
@@ -163,17 +185,19 @@ class _FewchursSubmitFormState extends State<FewchursSubmitForm> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Center(
-                  child: Container(
-                    width: 36,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: t.border,
-                      borderRadius: BorderRadius.circular(2),
+                if (widget.showHandle) ...[
+                  Center(
+                    child: Container(
+                      width: 36,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: t.border,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 8),
+                  const SizedBox(height: 8),
+                ],
                 Row(
                   children: [
                     Expanded(

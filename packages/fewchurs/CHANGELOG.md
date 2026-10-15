@@ -1,3 +1,10 @@
+## 1.5.0
+
+- `Fewchurs.showBoardSheet` adapts to the screen: a side sheet sliding in from the end edge on screens at least `wideLayoutBreakpoint` wide (840 px by default), and a bottom sheet on phones. Requests and the submit form open inside the side sheet. Choose with `position: FewchursSheetPosition.adaptive | side | bottom`, and set the width with `sideSheetWidth` (default 440).
+- `showFewchursSubmitSheet` opens a centered dialog on screens 600 px and wider.
+- Wide full-page board: the Top and New tabs now sit above the list column instead of spanning the page, and the comment box lines up with the 720 px content column.
+- `FewchursSubmitForm(showHandle:)` hides the drag handle.
+
 ## 1.4.1
 
 - First release on pub.dev. Install with `flutter pub add fewchurs`.

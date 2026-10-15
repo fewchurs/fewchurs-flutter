@@ -19,6 +19,19 @@ enum EmailField { hidden, optional, required }
 
 enum SubmitButtonPlacement { fab, bottomBar, appBarAction }
 
+/// Where `Fewchurs.showBoardSheet` opens the board.
+enum FewchursSheetPosition {
+  /// A side sheet on wide screens (web, desktop, tablets in landscape) and a
+  /// bottom sheet on phones.
+  adaptive,
+
+  /// Always a bottom sheet.
+  bottom,
+
+  /// Always a side sheet on the end edge (right, or left in RTL).
+  side,
+}
+
 @immutable
 class BoardOptions {
   const BoardOptions({

@@ -346,63 +346,69 @@ class _FewchursFeatureDetailState extends State<FewchursFeatureDetail> {
       color: t.surface,
       child: SafeArea(
         top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(12, 10, 8, 10),
-          child: ValueListenableBuilder<TextEditingValue>(
-            valueListenable: _commentText,
-            builder: (context, value, _) {
-              final hasText = value.text.trim().isNotEmpty;
-              final length = value.text.length;
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (hasText)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8, right: 4),
-                      child: TextField(
-                        controller: _nameText,
-                        maxLength: FewchursClient.authorNameMax,
-                        textCapitalization: TextCapitalization.words,
-                        decoration: decoration(s.nameHint),
-                      ),
-                    ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
+        child: Align(
+          child: ConstrainedBox(
+            // Line up with the 720-wide content column above.
+            constraints: const BoxConstraints(maxWidth: 760),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(12, 10, 8, 10),
+              child: ValueListenableBuilder<TextEditingValue>(
+                valueListenable: _commentText,
+                builder: (context, value, _) {
+                  final hasText = value.text.trim().isNotEmpty;
+                  final length = value.text.length;
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _commentText,
-                          minLines: 1,
-                          maxLines: 5,
-                          maxLength: FewchursClient.commentMax,
-                          textCapitalization: TextCapitalization.sentences,
-                          textInputAction: TextInputAction.send,
-                          onSubmitted: (_) => _send(),
-                          decoration: decoration(
-                            s.commentHint,
-                            counter: length > 800
-                                ? '$length/${FewchursClient.commentMax}'
-                                : null,
+                      if (hasText)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8, right: 4),
+                          child: TextField(
+                            controller: _nameText,
+                            maxLength: FewchursClient.authorNameMax,
+                            textCapitalization: TextCapitalization.words,
+                            decoration: decoration(s.nameHint),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 4),
-                      SizedBox.square(
-                        dimension: 48,
-                        child: c.isSendingComment
-                            ? const Center(child: FewchursSpinner(size: 20))
-                            : IconButton(
-                                tooltip: s.send,
-                                icon: Icon(Icons.send_rounded,
-                                    color: hasText ? t.primary : t.muted),
-                                onPressed: hasText ? _send : null,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _commentText,
+                              minLines: 1,
+                              maxLines: 5,
+                              maxLength: FewchursClient.commentMax,
+                              textCapitalization: TextCapitalization.sentences,
+                              textInputAction: TextInputAction.send,
+                              onSubmitted: (_) => _send(),
+                              decoration: decoration(
+                                s.commentHint,
+                                counter: length > 800
+                                    ? '$length/${FewchursClient.commentMax}'
+                                    : null,
                               ),
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          SizedBox.square(
+                            dimension: 48,
+                            child: c.isSendingComment
+                                ? const Center(child: FewchursSpinner(size: 20))
+                                : IconButton(
+                                    tooltip: s.send,
+                                    icon: Icon(Icons.send_rounded,
+                                        color: hasText ? t.primary : t.muted),
+                                    onPressed: hasText ? _send : null,
+                                  ),
+                          ),
+                        ],
                       ),
                     ],
-                  ),
-                ],
-              );
-            },
+                  );
+                },
+              ),
+            ),
           ),
         ),
       ),
