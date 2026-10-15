@@ -1,6 +1,22 @@
 # Fewchurs for Flutter
 
-Add a feature-request board to your Flutter app with one dependency and one line of code. Users can browse ideas, vote, comment, follow requests and suggest new ones. The board picks up your app's theme automatically. You can customize everything from a single color up to a fully custom UI.
+[![pub package](https://img.shields.io/pub/v/fewchurs.svg)](https://pub.dev/packages/fewchurs)
+[![CI](https://github.com/fewchurs/fewchurs-flutter/actions/workflows/ci.yml/badge.svg)](https://github.com/fewchurs/fewchurs-flutter/actions/workflows/ci.yml)
+
+Add a feature-request board to your Flutter app with one dependency and one line of code. Users browse ideas, vote, comment, follow requests and suggest new ones, and you see it all in the [Fewchurs dashboard](https://www.fewchurs.shop).
+
+<p>
+  <img src="https://raw.githubusercontent.com/fewchurs/fewchurs-flutter/main/packages/fewchurs/doc/screenshots/board.png" width="240" alt="The board with votes and statuses">
+  <img src="https://raw.githubusercontent.com/fewchurs/fewchurs-flutter/main/packages/fewchurs/doc/screenshots/detail.png" width="240" alt="A request with comments">
+  <img src="https://raw.githubusercontent.com/fewchurs/fewchurs-flutter/main/packages/fewchurs/doc/screenshots/submit.png" width="240" alt="The submit form">
+</p>
+
+<img src="https://raw.githubusercontent.com/fewchurs/fewchurs-flutter/main/packages/fewchurs/doc/screenshots/side_sheet.png" width="740" alt="The board as a side sheet on desktop">
+
+- **Ready-made board:** Top and New tabs, instant voting, comments, follow by email, pull to refresh and infinite scroll.
+- **Fits every screen:** a bottom sheet on phones, a side sheet on web and desktop, and list and detail side by side on wide pages.
+- **Matches your app:** reads your `ThemeData` (light and dark). Change one color, a few tokens, or build a fully custom UI.
+- **No analytics, no tracking:** a random per-device ID, and email only if the user types it.
 
 Runs on **Android, iOS, web, macOS, Windows and Linux**.
 Requires **Flutter 3.10+** and **Dart 3.0+**.
@@ -24,7 +40,7 @@ Requires **Flutter 3.10+** and **Dart 3.0+**.
 13. [Error handling](#13-error-handling)
 14. [Privacy and security](#14-privacy-and-security)
 15. [Troubleshooting](#15-troubleshooting)
-16. [Repository layout and development](#16-repository-layout-and-development)
+16. [Development](#16-development)
 
 ---
 
@@ -42,25 +58,7 @@ flutter pub add fewchurs
 
 That's it: `fewchurs_core` is installed with it.
 
-To try an unreleased version, install from GitHub instead. Add this to your app's `pubspec.yaml`, using any tag or branch as `ref`:
-
-```yaml
-dependencies:
-  fewchurs:
-    git:
-      url: https://github.com/fewchurs/fewchurs-flutter.git
-      path: packages/fewchurs
-      ref: main
-
-dependency_overrides:
-  fewchurs_core:
-    git:
-      url: https://github.com/fewchurs/fewchurs-flutter.git
-      path: packages/fewchurs_core
-      ref: main
-```
-
-The `dependency_overrides` entry makes the GitHub `fewchurs_core` match the GitHub `fewchurs`. Use the same `ref` in both.
+To try an unreleased version from GitHub, see [Development](#16-development).
 
 ### Import
 
@@ -79,7 +77,7 @@ This single import gives you everything: widgets, theming, controllers, the API 
 | **Android** | Add `<uses-permission android:name="android.permission.INTERNET"/>` to `android/app/src/main/AndroidManifest.xml`. Debug builds include it automatically, but **release builds need it**, and forgetting it is the most common "works in debug, fails in release" issue. |
 | **iOS** | Nothing. |
 | **macOS** | Add `<key>com.apple.security.network.client</key><true/>` to **both** `macos/Runner/DebugProfile.entitlements` and `macos/Runner/Release.entitlements`. |
-| **Web** | Nothing in your app. The Fewchurs server must allow CORS for `/api/v1`. The device ID is stored per browser, so clearing site data resets it. |
+| **Web** | Nothing. The device ID is stored per browser, so clearing site data resets it. |
 | **Windows / Linux** | Nothing. |
 
 ---
@@ -205,6 +203,8 @@ It's a bottom sheet on phones and a centered dialog on screens 600 px and wider.
 
 On wide screens (840 px and up by default: tablets, web and desktop), the board shows the list and the selected request side by side, with the tabs above the list.
 
+<img src="https://raw.githubusercontent.com/fewchurs/fewchurs-flutter/main/packages/fewchurs/doc/screenshots/wide.png" width="640" alt="List and detail side by side">
+
 ---
 
 ## 5. Submitting from your own UI
@@ -293,6 +293,8 @@ MaterialApp(
 ```
 
 Put a different `FewchursThemeData` in `darkTheme` to style dark mode separately. Theme changes animate.
+
+<img src="https://raw.githubusercontent.com/fewchurs/fewchurs-flutter/main/packages/fewchurs/doc/screenshots/dark.png" width="240" alt="Dark mode">
 
 ### Level 3: scoped to one board
 
@@ -564,7 +566,7 @@ Answers for the **Google Play Data safety** form and **Apple privacy labels**:
 |---|---|
 | Works in debug, fails in a release APK | Add the Android `INTERNET` permission. |
 | Nothing loads on macOS | Add the `network.client` entitlement to both entitlements files. |
-| Nothing loads on web, CORS error in the console | CORS must be enabled on the Fewchurs server for `/api/v1`. |
+| Nothing loads on web, CORS error in the console | Check that you didn't pass a custom `baseUrl`. The default server allows web apps. |
 | "Invalid API key" on the board | Copy the key again from the dashboard and pass it to `Fewchurs.configure(apiKey:)`. If the app was deleted, create a new one. |
 | "Something went wrong" everywhere | Set `logLevel: FewchursLogLevel.debug` to see requests. |
 | Board shows "configure must be called" | Call `Fewchurs.configure(...)` before `runApp`. |
@@ -573,7 +575,7 @@ Answers for the **Google Play Data safety** form and **Apple privacy labels**:
 
 ---
 
-## 16. Repository layout and development
+## 16. Development
 
 ```
 fewchurs-flutter/
@@ -599,10 +601,34 @@ flutter create . --project-name taskly --platforms=android,ios,web,macos
 flutter run --dart-define=FEWCHURS_API_KEY=fr_live_xxx
 ```
 
+Install straight from GitHub to try unreleased changes. Use the same `ref` (a tag, branch or commit) in both entries:
+
+```yaml
+dependencies:
+  fewchurs:
+    git:
+      url: https://github.com/fewchurs/fewchurs-flutter.git
+      path: packages/fewchurs
+      ref: main
+
+dependency_overrides:
+  fewchurs_core:
+    git:
+      url: https://github.com/fewchurs/fewchurs-flutter.git
+      path: packages/fewchurs_core
+      ref: main
+```
+
+Regenerate the screenshots after UI changes:
+
+```bash
+cd packages/fewchurs && flutter test tool/screenshots_test.dart --update-goldens
+```
+
 Local development uses `pubspec_overrides.yaml` files, so `fewchurs` depends on the local `fewchurs_core`. To publish, release `fewchurs_core` first and then `fewchurs`: run `dart pub publish` in `packages/fewchurs_core`, then `flutter pub publish` in `packages/fewchurs`.
 
 CI (`.github/workflows/ci.yml`) runs analysis and tests on the **minimum supported Flutter (3.10.6)** and on the **latest stable**. It also checks that `FewchursClient.defaultBaseUrl` resolves and answers, so a dead domain can't ship.
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+MIT. See [LICENSE](https://github.com/fewchurs/fewchurs-flutter/blob/main/LICENSE).

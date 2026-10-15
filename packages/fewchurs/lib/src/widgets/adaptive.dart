@@ -9,7 +9,8 @@ import '../l10n/fewchurs_strings.dart';
 import '../runtime.dart';
 import '../theme/fewchurs_theme.dart';
 
-/// Borderless filled text field. Only focus and errors draw an outline.
+/// Borderless filled text field. The label floats inside the fill, focus
+/// shows a thin underline, and errors show as red text below.
 InputDecoration fewchursInputDecoration(
   FewchursResolvedTheme t, {
   String? label,
@@ -21,8 +22,10 @@ InputDecoration fewchursInputDecoration(
   EdgeInsetsGeometry? contentPadding,
 }) {
   final radius = BorderRadius.circular(t.buttonRadius);
-  OutlineInputBorder outline(BorderSide side) =>
-      OutlineInputBorder(borderRadius: radius, borderSide: side);
+  // An underline border keeps the floating label inside the fill; an
+  // outline border without a visible side would float it above the box.
+  UnderlineInputBorder underline(BorderSide side) =>
+      UnderlineInputBorder(borderRadius: radius, borderSide: side);
   return InputDecoration(
     labelText: label,
     hintText: hint,
@@ -33,12 +36,12 @@ InputDecoration fewchursInputDecoration(
     contentPadding: contentPadding,
     filled: true,
     fillColor: t.fill,
-    border: outline(BorderSide.none),
-    enabledBorder: outline(BorderSide.none),
-    disabledBorder: outline(BorderSide.none),
-    focusedBorder: outline(BorderSide(color: t.primary, width: 1.5)),
-    errorBorder: outline(BorderSide(color: t.error)),
-    focusedErrorBorder: outline(BorderSide(color: t.error, width: 1.5)),
+    border: underline(BorderSide.none),
+    enabledBorder: underline(BorderSide.none),
+    disabledBorder: underline(BorderSide.none),
+    focusedBorder: underline(BorderSide(color: t.primary, width: 2)),
+    errorBorder: underline(BorderSide(color: t.error)),
+    focusedErrorBorder: underline(BorderSide(color: t.error, width: 2)),
   );
 }
 

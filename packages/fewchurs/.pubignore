@@ -11,3 +11,6 @@ pubspec.lock
 # Local-only overrides that point outside the package.
 pubspec_overrides.yaml
 example/pubspec_overrides.yaml
+
+# Screenshot generator; the images in doc/screenshots are published.
+tool/

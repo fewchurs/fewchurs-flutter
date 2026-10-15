@@ -1,3 +1,8 @@
+## 1.5.1
+
+- Text fields use the filled style, so floating labels sit inside the field instead of above it. Focus shows a thin underline.
+- README and pub.dev page: screenshots, a feature overview, and a simpler install section.
+
 ## 1.5.0
 
 - `Fewchurs.showBoardSheet` adapts to the screen: a side sheet sliding in from the end edge on screens at least `wideLayoutBreakpoint` wide (840 px by default), and a bottom sheet on phones. Requests and the submit form open inside the side sheet. Choose with `position: FewchursSheetPosition.adaptive | side | bottom`, and set the width with `sideSheetWidth` (default 440).

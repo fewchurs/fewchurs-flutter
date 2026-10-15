@@ -19,7 +19,7 @@ import 'screens/board_screen.dart';
 import 'theme/fewchurs_theme.dart';
 import 'widgets/adaptive.dart';
 
-const fewchursVersion = '1.5.0';
+const fewchursVersion = '1.5.1';
 
 /// Entry point: call [configure] once in `main()`, then [showBoard],
 /// [showBoardSheet] or embed a [FewchursBoard].
