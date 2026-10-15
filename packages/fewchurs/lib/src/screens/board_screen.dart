@@ -27,6 +27,7 @@ class FewchursBoard extends StatefulWidget {
   const FewchursBoard({
     super.key,
     this.options,
+    this.initialFeatureId,
     this.title,
     this.showAppBar = true,
     this.showCloseButton,
@@ -39,6 +40,11 @@ class FewchursBoard extends StatefulWidget {
 
   /// Overrides the `board` options passed to `Fewchurs.configure`.
   final BoardOptions? options;
+
+  /// Opens this request once the board is shown, e.g. from a deep link or a
+  /// notification. Shows "This request no longer exists." if it can't be
+  /// loaded, which includes requests hidden by the board's plan.
+  final String? initialFeatureId;
   final String? title;
   final bool showAppBar;
 
@@ -107,6 +113,19 @@ class _FewchursBoardState extends State<FewchursBoard>
     _subscriptions.add(_rt.submitted.stream.listen(_onSubmitted));
     _rt.loadRemoteConfig();
     _rt.emit(const BoardOpened());
+    final initial = widget.initialFeatureId;
+    if (initial != null) _openById(initial);
+  }
+
+  @override
+  void didUpdateWidget(FewchursBoard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final id = widget.initialFeatureId;
+    if (id != null &&
+        id != oldWidget.initialFeatureId &&
+        Fewchurs.isConfigured) {
+      _openById(id);
+    }
   }
 
   @override
@@ -145,6 +164,17 @@ class _FewchursBoardState extends State<FewchursBoard>
       c.remove(id);
     }
     if (_selected?.id == id) setState(() => _selected = null);
+  }
+
+  Future<void> _openById(String id) async {
+    try {
+      final feature = await Fewchurs.client.getFeature(id);
+      // Wait for a laid-out frame so the wide/narrow layout is known.
+      await WidgetsBinding.instance.endOfFrame;
+      if (mounted) _open(feature);
+    } on FewchursException catch (e) {
+      _showError(e);
+    }
   }
 
   void _open(Feature feature) {

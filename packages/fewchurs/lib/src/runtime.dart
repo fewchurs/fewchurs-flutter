@@ -14,6 +14,9 @@ class FewchursRuntime {
 
   static final instance = FewchursRuntime._();
 
+  /// Hides branding until `/config` answers, so paid plans never flash it.
+  static const _loadingRemote = RemoteConfig(showBranding: false);
+
   FewchursConfig? config;
   FewchursClient? client;
   VoteQueue? votes;
@@ -21,7 +24,7 @@ class FewchursRuntime {
   final prefs = const FewchursPrefs();
   final events = StreamController<FewchursEvent>.broadcast();
   final submitted = StreamController<Feature>.broadcast();
-  final remote = ValueNotifier<RemoteConfig>(const RemoteConfig());
+  final remote = ValueNotifier<RemoteConfig>(_loadingRemote);
   bool _remoteLoaded = false;
   bool _warnedNotConfigured = false;
 
@@ -43,9 +46,15 @@ class FewchursRuntime {
     final c = client;
     if (c == null || _remoteLoaded) return;
     c.getConfig().then((value) {
+      if (!identical(client, c)) return;
       _remoteLoaded = true;
       remote.value = value;
-    }, onError: (Object _) {});
+    }, onError: (Object _) {
+      if (!identical(client, c)) return;
+      // Fall back to the defaults (branding shown) like Kotlin and iOS.
+      // Not marked loaded, so the next board or detail screen retries.
+      remote.value = const RemoteConfig();
+    });
   }
 
   void reset() {
@@ -54,7 +63,7 @@ class FewchursRuntime {
     config = null;
     votes = null;
     _remoteLoaded = false;
-    remote.value = const RemoteConfig();
+    remote.value = _loadingRemote;
     draftTitle = '';
     draftDescription = '';
   }

@@ -85,6 +85,55 @@ void main() {
     expect(await errorFor('limit_reached', 402),
         isA<FewchursLimitReachedException>());
     expect(await errorFor('not_found', 404), isA<FewchursNotFoundException>());
+    expect(await errorFor('unauthorized', 401),
+        isA<FewchursInvalidApiKeyException>());
+    expect(await errorFor('forbidden', 403), isA<FewchursUnknownException>());
+  });
+
+  test('defaults to the live Fewchurs server', () async {
+    expect(FewchursClient.defaultBaseUrl, 'https://www.fewchurs.shop/api/v1');
+    late Uri url;
+    final client = FewchursClient(
+      apiKey: 'k',
+      identity: DeviceIdentity(resolver: () => 'd'),
+      logger: const FewchursLogger(level: FewchursLogLevel.none),
+      httpClient: MockClient((req) async {
+        url = req.url;
+        return jsonResponse({'showBranding': false});
+      }),
+    );
+    await client.getConfig();
+    expect(url.toString(), 'https://www.fewchurs.shop/api/v1/config');
+  });
+
+  test('getFeature fetches one request', () async {
+    late http.Request captured;
+    final client = makeClient((req) async {
+      captured = req;
+      return jsonResponse(featureJson('a/b'));
+    });
+    final feature = await client.getFeature('a/b');
+    expect(captured.method, 'GET');
+    expect(captured.url.path, endsWith('/features/a%2Fb'));
+    expect(feature.id, 'a/b');
+    expect(feature.isMine, isTrue);
+
+    final wrapped =
+        makeClient((_) async => jsonResponse({'feature': featureJson('c')}));
+    expect((await wrapped.getFeature('c')).id, 'c');
+
+    final missing = makeClient((_) async => jsonResponse({
+          'error': {'code': 'not_found', 'message': 'gone'}
+        }, 404));
+    await expectLater(
+        missing.getFeature('x'), throwsA(isA<FewchursNotFoundException>()));
+  });
+
+  test('RemoteConfig shows branding unless the server hides it', () {
+    expect(const RemoteConfig().showBranding, isTrue);
+    expect(RemoteConfig.fromJson(const {}).showBranding, isTrue);
+    expect(RemoteConfig.fromJson(const {'showBranding': false}).showBranding,
+        isFalse);
   });
 
   test('retries GET on 5xx but never retries POST /features', () async {

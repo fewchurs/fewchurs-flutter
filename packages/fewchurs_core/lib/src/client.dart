@@ -10,7 +10,7 @@ import 'json.dart';
 import 'logger.dart';
 import 'models.dart';
 
-const fewchursCoreVersion = '1.0.0';
+const fewchursCoreVersion = '1.1.0';
 
 typedef _Response = ({Map<String, Object?> json, String deviceId});
 
@@ -32,7 +32,7 @@ class FewchursClient {
         _http = httpClient ?? http.Client(),
         _ownsHttp = httpClient == null;
 
-  static const defaultBaseUrl = 'https://fewchurs.com/api/v1';
+  static const defaultBaseUrl = 'https://www.fewchurs.shop/api/v1';
 
   static const titleMin = 3;
   static const titleMax = 100;
@@ -93,6 +93,19 @@ class FewchursClient {
       features: features.toList(),
       nextCursor: readOptionalString(r.json['nextCursor']),
     );
+  }
+
+  /// Fetches one request, e.g. for a deep link or a notification. A request
+  /// hidden by the board's plan is returned only to the device that submitted
+  /// it; everyone else gets a [FewchursNotFoundException].
+  Future<Feature> getFeature(String featureId) async {
+    final r = await _send(
+        'GET', '/features/${Uri.encodeComponent(featureId)}',
+        retry: true);
+    final json = r.json['feature'];
+    return Feature.fromJson(
+        json is Map<String, Object?> ? json : r.json,
+        deviceId: r.deviceId);
   }
 
   Future<Feature> submitFeature({
@@ -294,7 +307,7 @@ class FewchursClient {
       if (error['message'] is String) message = error['message'] as String;
     }
     return switch ((code, status)) {
-      ('invalid_key', _) || (null, 401) =>
+      ('invalid_key' || 'unauthorized', _) || (null, 401) =>
         FewchursInvalidApiKeyException(message, statusCode: status),
       ('validation_failed' || 'missing_device_id', _) || (null, 400) =>
         FewchursValidationException(message, statusCode: status),
@@ -306,6 +319,9 @@ class FewchursClient {
         FewchursNotFoundException(message, statusCode: status),
       ('internal', _) || (_, >= 500) =>
         FewchursServerException(message, statusCode: status),
+      // A generic error, so the sealed exception set stays stable.
+      ('forbidden', _) || (null, 403) =>
+        FewchursUnknownException(message, statusCode: status),
       _ => FewchursUnknownException(message, statusCode: status),
     };
   }

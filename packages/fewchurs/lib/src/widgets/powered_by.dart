@@ -5,7 +5,8 @@ import '../l10n/fewchurs_strings.dart';
 import '../runtime.dart';
 import '../theme/fewchurs_theme.dart';
 
-/// Shown only when the server says so (`showBranding`). Pro plans hide it.
+/// Shown only when the server says so (`showBranding`). Starter and Pro plans
+/// hide it. If `/config` can't be loaded it is shown.
 class FewchursPoweredBy extends StatelessWidget {
   const FewchursPoweredBy({super.key});
 

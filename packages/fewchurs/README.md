@@ -32,17 +32,11 @@ Requires **Flutter 3.10+** and **Dart 3.0+**.
 
 ### Get an API key
 
-Open the [Fewchurs dashboard](https://fewchurs.com), select your app and copy the API key (`fr_live_…`) from its settings. The key is shown only once. If you lose it, generate a new one.
+Open the [Fewchurs dashboard](https://www.fewchurs.shop), select your app and copy the API key (`fr_live_…`) from its settings. The key is shown only once. If you lose it, generate a new one.
 
 ### Add the package
 
-**From pub.dev** (once published):
-
-```bash
-flutter pub add fewchurs
-```
-
-**From GitHub** (works today). Add this to your app's `pubspec.yaml`:
+The packages aren't on pub.dev yet, so install them from GitHub. Add this to your app's `pubspec.yaml`:
 
 ```yaml
 dependencies:
@@ -50,12 +44,14 @@ dependencies:
     git:
       url: https://github.com/fewchurs/fewchurs-flutter.git
       path: packages/fewchurs
+      ref: v1.1.0
 
 dependency_overrides:
   fewchurs_core:
     git:
       url: https://github.com/fewchurs/fewchurs-flutter.git
       path: packages/fewchurs_core
+      ref: v1.1.0
 ```
 
 Then run:
@@ -64,9 +60,9 @@ Then run:
 flutter pub get
 ```
 
-> The `dependency_overrides` entry is only needed while `fewchurs_core` isn't on pub.dev. Remove it once both packages are published.
+`ref` pins a release tag. Use the same `ref` in both entries, or remove both lines to follow `main`.
 
-To pin a specific version, add `ref: v1.0.0` (a tag or commit) under each `git:` entry.
+> The `dependency_overrides` entry is only needed while `fewchurs_core` isn't on pub.dev. Once both packages are published, `flutter pub add fewchurs` replaces all of the above.
 
 ### Import
 
@@ -166,6 +162,16 @@ With **go_router** (no extra dependency needed):
 GoRoute(path: '/ideas', builder: (context, state) => const FewchursBoard());
 ```
 
+### Open a specific request
+
+For deep links and notifications, pass the request's ID. The board opens and then shows that request:
+
+```dart
+Fewchurs.showBoard(context, board: FewchursBoard(showCloseButton: true, initialFeatureId: id));
+```
+
+If the request was deleted, or is hidden by the board's plan, the user sees "This request no longer exists." A request hidden by the plan is still returned to the device that submitted it.
+
 ### Only the submit form
 
 ```dart
@@ -177,6 +183,7 @@ final feature = await showFewchursSubmitSheet(context); // null if dismissed
 | Parameter | Type | Default | Description |
 |---|---|---|---|
 | `options` | `BoardOptions?` | from `configure` | Per-widget override of the board options. |
+| `initialFeatureId` | `String?` | — | Opens this request once the board is shown. For deep links and notifications. |
 | `title` | `String?` | strings.boardTitle | App bar title. |
 | `showAppBar` | `bool` | `true` | Set to `false` when embedding under your own app bar. |
 | `showCloseButton` | `bool?` | `null` | `true` shows an ✕ button and closes on Esc. `false` hides the leading button. `null` uses Flutter's default. |
@@ -235,7 +242,7 @@ Fewchurs.configure(
   deviceId: () async => hashedUserId,                 // see "User identity"
   deviceIdStore: MySecureStore(),                     // custom storage for the generated ID
   httpClient: myHttpClient,                           // package:http Client (logging, proxy, pinning)
-  baseUrl: 'https://staging.fewchurs.com/api/v1',     // override for staging
+  baseUrl: 'https://staging.fewchurs.shop/api/v1',    // override for staging
   logLevel: FewchursLogLevel.error,                   // none | error | debug (never logs the key)
 );
 ```
@@ -422,6 +429,7 @@ Fewchurs.boardController(statuses: {FeatureStatus.planned, FeatureStatus.inProgr
 
 ```dart
 final page = await Fewchurs.client.listFeatures(sort: FeatureSort.newest, limit: 20);
+final feature = await Fewchurs.client.getFeature(featureId);
 await Fewchurs.client.vote(featureId);
 await Fewchurs.client.unvote(featureId);
 await Fewchurs.client.follow(featureId, email: 'a@b.com');
@@ -508,14 +516,14 @@ Every failure is a subclass of `sealed class FewchursException`, so a `switch` c
 
 | Exception | When | `userMessage` |
 |---|---|---|
-| `FewchursInvalidApiKeyException` | Wrong or inactive key (401) | "Something went wrong. Try again." A warning with details is also logged for you. |
+| `FewchursInvalidApiKeyException` | Wrong or inactive key (401, `invalid_key` or `unauthorized`) | "Something went wrong. Try again." A warning with details is also logged for you. |
 | `FewchursValidationException` | Invalid input (400) | The validation message |
 | `FewchursRateLimitedException` | 15 submissions or 10 comments per device per day (429) | "You've reached today's limit. Try again tomorrow." |
-| `FewchursLimitReachedException` | Board isn't accepting requests (402) | "This board isn't accepting requests right now." |
+| `FewchursLimitReachedException` | Rare (402). Plans never block submitting, voting or commenting. | "This board isn't accepting requests right now." |
 | `FewchursNotFoundException` | Request was deleted (404) | "This request no longer exists." |
 | `FewchursServerException` | Server error (5xx) | "Something went wrong. Try again." |
 | `FewchursNetworkException` | Offline or timed out | "You're offline." |
-| `FewchursUnknownException` | Unexpected response | "Something went wrong. Try again." |
+| `FewchursUnknownException` | Forbidden (403) or an unexpected response | "Something went wrong. Try again." |
 
 Reads and votes are retried twice on network or server errors. New content (submissions and comments) is never retried automatically, so it can't be posted twice. Requests time out after 15 seconds.
 
@@ -527,7 +535,7 @@ The built-in UI never crashes your app. If `configure` hasn't been called, the b
 
 - **The API key can be published by design.** It ships inside every app binary and web page. Protection happens on the server with per-device limits.
 - Requests use HTTPS only. The key is never logged.
-- The key's owner controls the "Powered by Fewchurs" footer. It disappears automatically on the Pro plan.
+- The key's owner controls the "Powered by Fewchurs" footer. It disappears automatically on the Starter and Pro plans.
 
 Answers for the **Google Play Data safety** form and **Apple privacy labels**:
 
@@ -582,7 +590,7 @@ flutter run --dart-define=FEWCHURS_API_KEY=fr_live_xxx
 
 Local development uses `pubspec_overrides.yaml` files, so `fewchurs` depends on the local `fewchurs_core`. To publish, release `fewchurs_core` first and then `fewchurs`.
 
-CI (`.github/workflows/ci.yml`) runs analysis and tests on the **minimum supported Flutter (3.10.6)** and on the **latest stable**.
+CI (`.github/workflows/ci.yml`) runs analysis and tests on the **minimum supported Flutter (3.10.6)** and on the **latest stable**. It also checks that `FewchursClient.defaultBaseUrl` resolves and answers, so a dead domain can't ship.
 
 ## License
 

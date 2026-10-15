@@ -224,10 +224,14 @@ class VoteResult {
   final bool hasVoted;
 }
 
+/// Server settings for the app behind the API key.
+///
+/// When `/config` can't be loaded the defaults apply, so the
+/// "Powered by Fewchurs" line is shown, matching the Kotlin and iOS SDKs.
 @immutable
 class RemoteConfig {
   const RemoteConfig({
-    this.showBranding = false,
+    this.showBranding = true,
     this.hideVoteCounts = false,
     this.appName,
   });

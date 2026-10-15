@@ -69,4 +69,77 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Ideas'), findsOneWidget);
   });
+
+  testWidgets('shows the badge when /config fails', (tester) async {
+    Fewchurs.configure(
+      apiKey: 'fr_test',
+      logLevel: FewchursLogLevel.none,
+      httpClient: MockClient((req) async => req.url.path.endsWith('/config')
+          ? http.Response('oops', 500)
+          : http.Response('{"features":[]}', 200)),
+    );
+    await tester.pumpWidget(const MaterialApp(home: FewchursBoard()));
+    await tester.pumpAndSettle();
+    expect(find.text('Powered by Fewchurs'), findsNothing); // still retrying
+    await tester.pump(const Duration(seconds: 3)); // past both retries
+    await tester.pumpAndSettle();
+    expect(find.text('Powered by Fewchurs'), findsOneWidget);
+  });
+
+  testWidgets('hides the badge when the server says so', (tester) async {
+    Fewchurs.configure(
+      apiKey: 'fr_test',
+      logLevel: FewchursLogLevel.none,
+      httpClient: MockClient((req) async => http.Response(
+          jsonEncode({'features': [], 'showBranding': false}), 200)),
+    );
+    await tester.pumpWidget(const MaterialApp(home: FewchursBoard()));
+    await tester.pumpAndSettle();
+    expect(find.text('Powered by Fewchurs'), findsNothing);
+  });
+
+  testWidgets('initialFeatureId opens that request', (tester) async {
+    final paths = <String>[];
+    Fewchurs.configure(
+      apiKey: 'fr_test',
+      logLevel: FewchursLogLevel.none,
+      httpClient: MockClient((req) async {
+        paths.add(req.url.path);
+        final body = req.url.path.endsWith('/features/f1')
+            ? {
+                'id': 'f1',
+                'title': 'Dark mode please',
+                'status': 'open',
+                'createdAt': '2026-01-01T00:00:00.000Z',
+                'updatedAt': '2026-01-01T00:00:00.000Z',
+              }
+            : {'features': [], 'comments': []};
+        return http.Response(jsonEncode(body), 200);
+      }),
+    );
+    await tester.pumpWidget(
+        const MaterialApp(home: FewchursBoard(initialFeatureId: 'f1')));
+    await tester.pumpAndSettle();
+    expect(paths, contains(endsWith('/features/f1')));
+    expect(find.text('Dark mode please'), findsWidgets);
+  });
+
+  testWidgets('initialFeatureId shows a message when not found',
+      (tester) async {
+    Fewchurs.configure(
+      apiKey: 'fr_test',
+      logLevel: FewchursLogLevel.none,
+      httpClient: MockClient((req) async => req.url.path.endsWith('/features/x')
+          ? http.Response(
+              jsonEncode({
+                'error': {'code': 'not_found', 'message': 'gone'}
+              }),
+              404)
+          : http.Response('{"features":[]}', 200)),
+    );
+    await tester.pumpWidget(
+        const MaterialApp(home: FewchursBoard(initialFeatureId: 'x')));
+    await tester.pumpAndSettle();
+    expect(find.text('This request no longer exists.'), findsOneWidget);
+  });
 }

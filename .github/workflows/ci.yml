@@ -6,6 +6,19 @@ on:
   pull_request:
 
 jobs:
+  default-url:
+    # Fails if FewchursClient.defaultBaseUrl stops resolving, so a dead domain
+    # can't ship again. Any HTTP answer below 500 counts (401 without a key).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          url=$(sed -n "s/.*defaultBaseUrl = '\(.*\)';/\1/p" packages/fewchurs_core/lib/src/client.dart)
+          test -n "$url" || { echo "defaultBaseUrl not found"; exit 1; }
+          http_status=$(curl -s -o /dev/null -w '%{http_code}' --retry 3 --retry-all-errors -m 20 "$url/config" || true)
+          echo "$url/config -> HTTP $http_status"
+          [ "$http_status" -ge 200 ] && [ "$http_status" -lt 500 ]
+
   core:
     runs-on: ubuntu-latest
     strategy:
