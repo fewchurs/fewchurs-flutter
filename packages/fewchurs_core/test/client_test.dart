@@ -158,8 +158,8 @@ void main() {
   test('network failures become FewchursNetworkException', () async {
     final client =
         makeClient((_) async => throw http.ClientException('no route'));
-    await expectLater(client.getConfig(),
-        throwsA(isA<FewchursNetworkException>()));
+    await expectLater(
+        client.getConfig(), throwsA(isA<FewchursNetworkException>()));
   });
 
   test('validates input before hitting the network', () async {

@@ -1,3 +1,8 @@
+## 1.4.1
+
+- First release on pub.dev. Install with `flutter pub add fewchurs`.
+- Requires `fewchurs_core` 1.2.1.
+
 ## 1.4.0
 
 - Cleaner, borderless look. Cards, vote buttons, text fields and the Follow button no longer have outlines, and the dividers under the tabs, above comments, above the comment box and between the list and detail on wide screens are gone. Cards and controls use a light fill instead, in light and dark mode. Text fields still show an outline while focused or invalid.

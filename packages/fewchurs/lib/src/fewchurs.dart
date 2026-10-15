@@ -1,4 +1,6 @@
 import 'dart:async';
+// Needed on older Flutter versions, where foundation doesn't re-export it.
+// ignore: unnecessary_import
 import 'dart:ui' show PlatformDispatcher;
 
 import 'package:fewchurs_core/fewchurs_core.dart';
@@ -17,7 +19,7 @@ import 'screens/board_screen.dart';
 import 'theme/fewchurs_theme.dart';
 import 'widgets/adaptive.dart';
 
-const fewchursVersion = '1.4.0';
+const fewchursVersion = '1.4.1';
 
 /// Entry point: call [configure] once in `main()`, then [showBoard],
 /// [showBoardSheet] or embed a [FewchursBoard].
@@ -68,7 +70,8 @@ class Fewchurs {
         userEmail: userEmail,
       );
     if (!apiKey.startsWith('fr_')) {
-      logger.error('The API key doesn\'t look like a Fewchurs key (fr_live_…).');
+      logger
+          .error('The API key doesn\'t look like a Fewchurs key (fr_live_…).');
     }
   }
 
@@ -83,7 +86,8 @@ class Fewchurs {
   }
 
   static FewchursConfig get config =>
-      _rt.config ?? (throw StateError('Call Fewchurs.configure(apiKey: ...) first.'));
+      _rt.config ??
+      (throw StateError('Call Fewchurs.configure(apiKey: ...) first.'));
 
   /// Analytics-friendly events. The package itself sends no analytics.
   static Stream<FewchursEvent> get events => _rt.events.stream;

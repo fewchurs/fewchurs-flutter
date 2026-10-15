@@ -10,10 +10,13 @@ import 'json.dart';
 import 'logger.dart';
 import 'models.dart';
 
-const fewchursCoreVersion = '1.2.0';
+/// Version of this package, sent in the SDK header.
+const fewchursCoreVersion = '1.2.1';
 
 typedef _Response = ({Map<String, Object?> json, String deviceId});
 
+/// Client for the Fewchurs API (`/api/v1`). Reads and votes are retried on
+/// network and server errors; new content never is.
 class FewchursClient {
   FewchursClient({
     required this.apiKey,
@@ -32,6 +35,7 @@ class FewchursClient {
         _http = httpClient ?? http.Client(),
         _ownsHttp = httpClient == null;
 
+  /// The live Fewchurs API.
   static const defaultBaseUrl = 'https://www.fewchurs.shop/api/v1';
 
   static const titleMin = 3;
@@ -42,7 +46,9 @@ class FewchursClient {
 
   static final _emailPattern = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
 
-  static bool isValidEmail(String email) => _emailPattern.hasMatch(email.trim());
+  /// Whether [email] looks like an email address.
+  static bool isValidEmail(String email) =>
+      _emailPattern.hasMatch(email.trim());
 
   final String apiKey;
   final String baseUrl;
@@ -59,6 +65,7 @@ class FewchursClient {
   final bool _ownsHttp;
   Future<RemoteConfig>? _config;
 
+  /// Server settings for this app, cached until [refresh] is `true`.
   Future<RemoteConfig> getConfig({bool refresh = false}) {
     final cached = _config;
     if (cached != null && !refresh) return cached;
@@ -71,6 +78,7 @@ class FewchursClient {
     return future;
   }
 
+  /// Lists requests. [statuses] filters by status; [cursor] pages.
   Future<FeaturePage> listFeatures({
     FeatureSort sort = FeatureSort.top,
     int limit = 20,
@@ -99,15 +107,14 @@ class FewchursClient {
   /// hidden by the board's plan is returned only to the device that submitted
   /// it; everyone else gets a [FewchursNotFoundException].
   Future<Feature> getFeature(String featureId) async {
-    final r = await _send(
-        'GET', '/features/${Uri.encodeComponent(featureId)}',
+    final r = await _send('GET', '/features/${Uri.encodeComponent(featureId)}',
         retry: true);
     final json = r.json['feature'];
-    return Feature.fromJson(
-        json is Map<String, Object?> ? json : r.json,
+    return Feature.fromJson(json is Map<String, Object?> ? json : r.json,
         deviceId: r.deviceId);
   }
 
+  /// Submits a request. Input is validated before sending.
   Future<Feature> submitFeature({
     required String title,
     String description = '',
@@ -137,8 +144,10 @@ class FewchursClient {
     return feature;
   }
 
+  /// Adds this device's vote.
   Future<VoteResult> vote(String featureId) => _vote(featureId, true);
 
+  /// Removes this device's vote.
   Future<VoteResult> unvote(String featureId) => _vote(featureId, false);
 
   Future<VoteResult> _vote(String featureId, bool add) async {
@@ -150,6 +159,7 @@ class FewchursClient {
     return result;
   }
 
+  /// Emails [email] when the request changes.
   Future<void> follow(String featureId, {required String email}) async {
     if (!isValidEmail(email)) throw _invalid('Enter a valid email address.');
     await _send('POST', '/features/${Uri.encodeComponent(featureId)}/follow',
@@ -157,13 +167,14 @@ class FewchursClient {
     onEvent?.call(Followed(featureId, following: true));
   }
 
+  /// Stops the emails for this device.
   Future<void> unfollow(String featureId) async {
-    await _send(
-        'DELETE', '/features/${Uri.encodeComponent(featureId)}/follow',
+    await _send('DELETE', '/features/${Uri.encodeComponent(featureId)}/follow',
         retry: true);
     onEvent?.call(Followed(featureId, following: false));
   }
 
+  /// Lists comments, oldest first.
   Future<CommentPage> listComments(
     String featureId, {
     int limit = 20,
@@ -184,6 +195,7 @@ class FewchursClient {
     );
   }
 
+  /// Posts a comment, with an optional display name.
   Future<Comment> addComment(
     String featureId, {
     required String text,
@@ -207,6 +219,7 @@ class FewchursClient {
     return comment;
   }
 
+  /// Closes the HTTP client if this client created it.
   void close() {
     if (_ownsHttp) _http.close();
   }
@@ -307,20 +320,27 @@ class FewchursClient {
       if (error['message'] is String) message = error['message'] as String;
     }
     return switch ((code, status)) {
-      ('invalid_key' || 'unauthorized', _) || (null, 401) =>
+      ('invalid_key' || 'unauthorized', _) ||
+      (null, 401) =>
         FewchursInvalidApiKeyException(message, statusCode: status),
-      ('validation_failed' || 'missing_device_id', _) || (null, 400) =>
+      ('validation_failed' || 'missing_device_id', _) ||
+      (null, 400) =>
         FewchursValidationException(message, statusCode: status),
-      ('rate_limited', _) || (null, 429) =>
+      ('rate_limited', _) ||
+      (null, 429) =>
         FewchursRateLimitedException(message, statusCode: status),
-      ('limit_reached', _) || (null, 402) =>
+      ('limit_reached', _) ||
+      (null, 402) =>
         FewchursLimitReachedException(message, statusCode: status),
-      ('not_found', _) || (null, 404) =>
+      ('not_found', _) ||
+      (null, 404) =>
         FewchursNotFoundException(message, statusCode: status),
-      ('internal', _) || (_, >= 500) =>
+      ('internal', _) ||
+      (_, >= 500) =>
         FewchursServerException(message, statusCode: status),
       // A generic error, so the sealed exception set stays stable.
-      ('forbidden', _) || (null, 403) =>
+      ('forbidden', _) ||
+      (null, 403) =>
         FewchursUnknownException(message, statusCode: status),
       _ => FewchursUnknownException(message, statusCode: status),
     };

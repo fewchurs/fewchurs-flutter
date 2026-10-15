@@ -164,7 +164,8 @@ class _EmailDialogState extends State<_EmailDialog> {
       setState(() => _error = FewchursStrings.of(context).emailInvalid);
       return;
     }
-    Navigator.of(context).pop<EmailPromptResult>((email: email, remember: _remember));
+    Navigator.of(context)
+        .pop<EmailPromptResult>((email: email, remember: _remember));
   }
 
   @override

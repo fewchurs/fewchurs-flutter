@@ -1,0 +1,13 @@
+# .pubignore replaces .gitignore for publishing, so repeat those rules.
+.dart_tool/
+build/
+pubspec.lock
+.flutter-plugins
+.flutter-plugins-dependencies
+.idea/
+*.iml
+.DS_Store
+
+# Local-only overrides that point outside the package.
+pubspec_overrides.yaml
+example/pubspec_overrides.yaml

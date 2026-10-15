@@ -1,12 +1,16 @@
 import 'dart:async';
 import 'dart:math';
 
+/// Persists the generated device ID between launches.
 abstract class DeviceIdStore {
+  /// Returns the saved ID, or `null` if there is none.
   Future<String?> read();
 
+  /// Saves [id].
   Future<void> write(String id);
 }
 
+/// A [DeviceIdStore] that forgets the ID when the process ends.
 class InMemoryDeviceIdStore implements DeviceIdStore {
   String? _id;
 
@@ -17,6 +21,7 @@ class InMemoryDeviceIdStore implements DeviceIdStore {
   Future<void> write(String id) async => _id = id;
 }
 
+/// Returns your own device or user ID, or `null` to use the generated one.
 typedef DeviceIdResolver = FutureOr<String?> Function();
 
 /// Resolves the `X-Device-Id` for requests: a custom [resolver] first, then a
@@ -25,10 +30,14 @@ class DeviceIdentity {
   DeviceIdentity({DeviceIdStore? store, this.resolver})
       : store = store ?? InMemoryDeviceIdStore();
 
+  /// Where the generated ID is saved.
   final DeviceIdStore store;
+
+  /// Optional custom ID, tried before the generated one.
   final DeviceIdResolver? resolver;
   Future<String>? _generated;
 
+  /// The ID sent as `X-Device-Id`.
   Future<String> get id async {
     if (resolver != null) {
       try {
@@ -52,6 +61,7 @@ class DeviceIdentity {
   }
 }
 
+/// A random RFC 4122 version 4 UUID.
 String generateUuidV4() {
   final random = Random.secure();
   final bytes = List<int>.generate(16, (_) => random.nextInt(256));

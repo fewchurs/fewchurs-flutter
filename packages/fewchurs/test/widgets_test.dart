@@ -63,15 +63,15 @@ void main() {
       apiKey: 'fr_test',
       logLevel: FewchursLogLevel.none,
       strings: const FewchursStrings(boardTitle: 'Ideas'),
-      httpClient: MockClient((_) async => http.Response('{"features":[]}', 200)),
+      httpClient:
+          MockClient((_) async => http.Response('{"features":[]}', 200)),
     );
     await tester.pumpWidget(const MaterialApp(home: FewchursBoard()));
     await tester.pumpAndSettle();
     expect(find.text('Ideas'), findsOneWidget);
   });
 
-  testWidgets('a wrong API key shows the invalid-key message',
-      (tester) async {
+  testWidgets('a wrong API key shows the invalid-key message', (tester) async {
     Fewchurs.configure(
       apiKey: 'fr_live_wrong',
       logLevel: FewchursLogLevel.none,

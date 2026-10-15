@@ -45,14 +45,17 @@ class FewchursVoteButton extends StatelessWidget {
         ? null
         : Text(
             '${state.count}',
-            style: t.labelStyle.copyWith(
-                color: fg, fontWeight: FontWeight.w700, fontSize: 13),
+            style: t.labelStyle
+                .copyWith(color: fg, fontWeight: FontWeight.w700, fontSize: 13),
           );
 
     final content = style == VoteButtonStyle.pill
         ? Row(
             mainAxisSize: MainAxisSize.min,
-            children: [icon, if (count != null) ...[const SizedBox(width: 2), count]],
+            children: [
+              icon,
+              if (count != null) ...[const SizedBox(width: 2), count]
+            ],
           )
         : Column(
             mainAxisSize: MainAxisSize.min,

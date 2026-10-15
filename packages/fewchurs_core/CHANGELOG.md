@@ -1,3 +1,7 @@
+## 1.2.1
+
+- Documented the public API and added an example, ready for pub.dev.
+
 ## 1.2.0
 
 - `FewchursInvalidApiKeyException.userMessage` is now "Invalid API key. Check the key in your Fewchurs dashboard." instead of the generic error.

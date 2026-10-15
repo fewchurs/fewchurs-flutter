@@ -70,8 +70,8 @@ class FeatureDetailController extends ChangeNotifier {
       var next = reset ? null : _cursor;
       var pages = 0;
       do {
-        final page =
-            await _client.listComments(_feature.id, limit: pageSize, cursor: next);
+        final page = await _client.listComments(_feature.id,
+            limit: pageSize, cursor: next);
         loaded.addAll(page.comments);
         next = page.nextCursor;
         pages++;

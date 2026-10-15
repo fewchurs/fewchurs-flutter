@@ -215,8 +215,9 @@ class FewchursResolvedTheme {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final dark = theme.brightness == Brightness.dark;
-    final d = (theme.extension<FewchursThemeData>() ?? const FewchursThemeData())
-        .merge(FewchursTheme.maybeOf(context));
+    final d =
+        (theme.extension<FewchursThemeData>() ?? const FewchursThemeData())
+            .merge(FewchursTheme.maybeOf(context));
 
     final onSurface = d.onSurface ?? scheme.onSurface;
     final primary = d.primary ?? scheme.primary;
@@ -224,9 +225,11 @@ class FewchursResolvedTheme {
         (d.primary == null ? scheme.onPrimary : _contrastOn(primary));
     final text = theme.textTheme;
 
-    TextStyle style(TextStyle? custom, TextStyle? base, TextStyle fallback,
-        Color color) {
-      final s = (base ?? fallback).merge(custom).copyWith(color: custom?.color ?? color);
+    TextStyle style(
+        TextStyle? custom, TextStyle? base, TextStyle fallback, Color color) {
+      final s = (base ?? fallback)
+          .merge(custom)
+          .copyWith(color: custom?.color ?? color);
       return d.fontFamily == null ? s : s.copyWith(fontFamily: d.fontFamily);
     }
 
@@ -245,8 +248,11 @@ class FewchursResolvedTheme {
       buttonRadius: d.buttonRadius ?? 10,
       chipRadius: d.chipRadius ?? 999,
       sheetRadius: d.sheetRadius ?? 20,
-      titleStyle: style(d.titleStyle, text.titleMedium,
-          const TextStyle(fontSize: 16, fontWeight: FontWeight.w600), onSurface),
+      titleStyle: style(
+          d.titleStyle,
+          text.titleMedium,
+          const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          onSurface),
       bodyStyle: style(
           d.bodyStyle, text.bodyMedium, const TextStyle(fontSize: 14), muted),
       labelStyle: style(d.labelStyle, text.labelMedium,

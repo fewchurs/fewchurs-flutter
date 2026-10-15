@@ -19,7 +19,8 @@ void configure({FewchursStyle style = FewchursStyle.material}) {
 
 void main() {
   configure();
-  Fewchurs.events.listen((event) => debugPrint('fewchurs event: ${event.name}'));
+  Fewchurs.events
+      .listen((event) => debugPrint('fewchurs event: ${event.name}'));
   runApp(const ExampleApp());
 }
 
@@ -67,8 +68,8 @@ class _HomePageState extends State<HomePage> {
             const ListTile(
               leading: Icon(Icons.warning_amber_rounded),
               title: Text('No API key'),
-              subtitle: Text(
-                  'Run with --dart-define=FEWCHURS_API_KEY=fr_live_xxx'),
+              subtitle:
+                  Text('Run with --dart-define=FEWCHURS_API_KEY=fr_live_xxx'),
             ),
           SwitchListTile(
             title: const Text('Cupertino style'),
@@ -76,7 +77,8 @@ class _HomePageState extends State<HomePage> {
             onChanged: (value) {
               setState(() => _cupertino = value);
               configure(
-                  style: value ? FewchursStyle.cupertino : FewchursStyle.material);
+                  style:
+                      value ? FewchursStyle.cupertino : FewchursStyle.material);
             },
           ),
           ListTile(
@@ -158,7 +160,8 @@ class CustomBuildersPage extends StatelessWidget {
           ),
           trailing: TextButton.icon(
             onPressed: actions.toggleVote,
-            icon: Icon(feature.hasVoted ? Icons.thumb_up : Icons.thumb_up_outlined),
+            icon: Icon(
+                feature.hasVoted ? Icons.thumb_up : Icons.thumb_up_outlined),
             label: Text('${feature.upvoteCount}'),
           ),
         ),
@@ -245,8 +248,8 @@ class _OwnSubmitPageState extends State<OwnSubmitPage> {
     final messenger = ScaffoldMessenger.of(context);
     try {
       final feature = await Fewchurs.submitFeature(title: _title.text);
-      messenger.showSnackBar(
-          SnackBar(content: Text('Submitted ${feature.id} (${feature.status.name})')));
+      messenger.showSnackBar(SnackBar(
+          content: Text('Submitted ${feature.id} (${feature.status.name})')));
       _title.clear();
     } on FewchursException catch (e) {
       messenger.showSnackBar(SnackBar(content: Text(e.userMessage)));

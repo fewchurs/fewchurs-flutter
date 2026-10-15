@@ -32,8 +32,7 @@ class VoteQueue {
     try {
       while (true) {
         final target = _desired[id]!;
-        final result =
-            target ? await client.vote(id) : await client.unvote(id);
+        final result = target ? await client.vote(id) : await client.unvote(id);
         if (_desired[id] == target) {
           apply((f) => f.copyWith(
               hasVoted: result.hasVoted, upvoteCount: result.upvoteCount));
@@ -42,8 +41,8 @@ class VoteQueue {
       }
     } catch (_) {
       final base = _base[id]!;
-      apply((f) => f.copyWith(
-          hasVoted: base.hasVoted, upvoteCount: base.upvoteCount));
+      apply((f) =>
+          f.copyWith(hasVoted: base.hasVoted, upvoteCount: base.upvoteCount));
       rethrow;
     } finally {
       _running.remove(id);

@@ -433,8 +433,8 @@ class _BoardTabViewState extends State<_BoardTabView>
           builder: (context, constraints) {
             final side = math.max(
                 16.0, (constraints.maxWidth - widget.maxContentWidth) / 2);
-            final padding = EdgeInsets.fromLTRB(
-                side, 12, side, 16 + widget.bottomPadding);
+            final padding =
+                EdgeInsets.fromLTRB(side, 12, side, 16 + widget.bottomPadding);
             final state = widget.controller.state;
             switch (state) {
               case BoardLoading():

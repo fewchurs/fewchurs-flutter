@@ -18,9 +18,9 @@ Map<String, Object?> featureJson(String id,
       'updatedAt': '2026-01-01T00:00:00.000Z',
     };
 
-http.Response json(Object body, [int status = 200]) => http.Response(
-    jsonEncode(body), status,
-    headers: {'content-type': 'application/json'});
+http.Response json(Object body, [int status = 200]) =>
+    http.Response(jsonEncode(body), status,
+        headers: {'content-type': 'application/json'});
 
 FewchursClient clientFor(MockClientHandler handler) => FewchursClient(
       apiKey: 'fr_test',
@@ -67,7 +67,9 @@ void main() {
   test('optimistic vote reconciles with the server count', () async {
     final client = clientFor((req) async {
       if (req.method == 'GET') {
-        return json({'features': [featureJson('a', votes: 4)]});
+        return json({
+          'features': [featureJson('a', votes: 4)]
+        });
       }
       return json({'upvoteCount': 10, 'hasVoted': true});
     });
@@ -85,7 +87,9 @@ void main() {
   test('failed vote rolls back and reports the error', () async {
     final client = clientFor((req) async {
       if (req.method == 'GET') {
-        return json({'features': [featureJson('a', votes: 4)]});
+        return json({
+          'features': [featureJson('a', votes: 4)]
+        });
       }
       return json({
         'error': {'code': 'rate_limited', 'message': 'no'}

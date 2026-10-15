@@ -166,9 +166,7 @@ class FewchursStrings {
         FewchursNotFoundException() => errorNotFound,
         FewchursNetworkException() => errorOffline,
         FewchursInvalidApiKeyException() => errorInvalidApiKey,
-        FewchursServerException() ||
-        FewchursUnknownException() =>
-          errorGeneric,
+        FewchursServerException() || FewchursUnknownException() => errorGeneric,
       };
 }
 

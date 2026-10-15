@@ -36,7 +36,13 @@ Open the [Fewchurs dashboard](https://www.fewchurs.shop), select your app and co
 
 ### Add the package
 
-The packages aren't on pub.dev yet, so install them from GitHub. Add this to your app's `pubspec.yaml`:
+```bash
+flutter pub add fewchurs
+```
+
+That's it: `fewchurs_core` is installed with it.
+
+To try an unreleased version, install from GitHub instead. Add this to your app's `pubspec.yaml`, using any tag or branch as `ref`:
 
 ```yaml
 dependencies:
@@ -44,25 +50,17 @@ dependencies:
     git:
       url: https://github.com/fewchurs/fewchurs-flutter.git
       path: packages/fewchurs
-      ref: v1.4.0
+      ref: main
 
 dependency_overrides:
   fewchurs_core:
     git:
       url: https://github.com/fewchurs/fewchurs-flutter.git
       path: packages/fewchurs_core
-      ref: v1.4.0
+      ref: main
 ```
 
-Then run:
-
-```bash
-flutter pub get
-```
-
-`ref` pins a release tag. Use the same `ref` in both entries, or remove both lines to follow `main`.
-
-> The `dependency_overrides` entry is only needed while `fewchurs_core` isn't on pub.dev. Once both packages are published, `flutter pub add fewchurs` replaces all of the above.
+The `dependency_overrides` entry makes the GitHub `fewchurs_core` match the GitHub `fewchurs`. Use the same `ref` in both.
 
 ### Import
 
@@ -589,7 +587,7 @@ flutter create . --project-name taskly --platforms=android,ios,web,macos
 flutter run --dart-define=FEWCHURS_API_KEY=fr_live_xxx
 ```
 
-Local development uses `pubspec_overrides.yaml` files, so `fewchurs` depends on the local `fewchurs_core`. To publish, release `fewchurs_core` first and then `fewchurs`.
+Local development uses `pubspec_overrides.yaml` files, so `fewchurs` depends on the local `fewchurs_core`. To publish, release `fewchurs_core` first and then `fewchurs`: run `dart pub publish` in `packages/fewchurs_core`, then `flutter pub publish` in `packages/fewchurs`.
 
 CI (`.github/workflows/ci.yml`) runs analysis and tests on the **minimum supported Flutter (3.10.6)** and on the **latest stable**. It also checks that `FewchursClient.defaultBaseUrl` resolves and answers, so a dead domain can't ship.
 

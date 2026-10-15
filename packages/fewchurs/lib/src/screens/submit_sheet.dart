@@ -107,8 +107,7 @@ class _FewchursSubmitFormState extends State<FewchursSubmitForm> {
 
     setState(() => _submitting = true);
     try {
-      final email =
-          _emailMode == EmailField.hidden ? '' : _email.text.trim();
+      final email = _emailMode == EmailField.hidden ? '' : _email.text.trim();
       final feature = await Fewchurs.submitFeature(
         title: _title.text,
         description: _description.text,

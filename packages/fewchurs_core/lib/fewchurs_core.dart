@@ -1,3 +1,8 @@
+/// Pure Dart client for the Fewchurs feature-request API: [FewchursClient],
+/// models such as [Feature] and [Comment], typed [FewchursException]s and
+/// [DeviceIdentity].
+///
+/// Flutter apps should use the `fewchurs` package, which re-exports this one.
 library;
 
 export 'src/client.dart';

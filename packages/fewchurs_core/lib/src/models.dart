@@ -2,6 +2,7 @@ import 'package:meta/meta.dart';
 
 import 'json.dart';
 
+/// Where a request stands. Unknown server values become [unknown].
 enum FeatureStatus {
   open('open'),
   planned('planned'),
@@ -12,8 +13,10 @@ enum FeatureStatus {
 
   const FeatureStatus(this.wireName);
 
+  /// The value used by the API.
   final String wireName;
 
+  /// Parses an API value, falling back to [unknown].
   static FeatureStatus parse(Object? value) {
     for (final status in values) {
       if (status.wireName == value) return status;
@@ -22,6 +25,7 @@ enum FeatureStatus {
   }
 }
 
+/// Board order: most votes first, or newest first.
 enum FeatureSort {
   top('top'),
   newest('new');
@@ -31,6 +35,7 @@ enum FeatureSort {
   final String wireName;
 }
 
+/// A feature request on the board.
 @immutable
 class Feature {
   const Feature({
@@ -68,19 +73,43 @@ class Feature {
     );
   }
 
+  /// Server ID.
   final String id;
+
+  /// Short title, 3–100 characters.
   final String title;
+
+  /// Optional details, up to 1000 characters.
   final String description;
+
+  /// Where the request stands.
   final FeatureStatus status;
+
+  /// Number of votes.
   final int upvoteCount;
+
+  /// Number of comments.
   final int commentCount;
+
+  /// Number of people following by email.
   final int followerCount;
+
+  /// Whether this device has voted.
   final bool hasVoted;
+
+  /// Whether this device follows the request.
   final bool isFollowing;
+
+  /// Whether this device submitted the request.
   final bool isMine;
+
+  /// When it was submitted.
   final DateTime createdAt;
+
+  /// When it last changed.
   final DateTime updatedAt;
 
+  /// Returns a copy with the given fields replaced.
   Feature copyWith({
     String? title,
     String? description,
@@ -148,6 +177,7 @@ class Feature {
   String toString() => 'Feature($id, $title, ${status.wireName})';
 }
 
+/// A comment on a [Feature].
 @immutable
 class Comment {
   const Comment({
@@ -173,11 +203,22 @@ class Comment {
     );
   }
 
+  /// Server ID.
   final String id;
+
+  /// Comment text, 1–1000 characters.
   final String text;
+
+  /// Display name; empty when anonymous.
   final String authorName;
+
+  /// Whether the app's developer wrote it.
   final bool isDeveloper;
+
+  /// Whether this device wrote it.
   final bool isMine;
+
+  /// When it was posted.
   final DateTime createdAt;
 
   @override
@@ -195,6 +236,7 @@ class Comment {
       Object.hash(id, text, authorName, isDeveloper, isMine, createdAt);
 }
 
+/// One page of [Feature]s. Pass [nextCursor] to get the next page.
 @immutable
 class FeaturePage {
   const FeaturePage({required this.features, this.nextCursor});
@@ -203,6 +245,7 @@ class FeaturePage {
   final String? nextCursor;
 }
 
+/// One page of [Comment]s. Pass [nextCursor] to get the next page.
 @immutable
 class CommentPage {
   const CommentPage({required this.comments, this.nextCursor});
@@ -211,6 +254,7 @@ class CommentPage {
   final String? nextCursor;
 }
 
+/// The vote count and state after voting or unvoting.
 @immutable
 class VoteResult {
   const VoteResult({required this.upvoteCount, required this.hasVoted});
@@ -242,7 +286,12 @@ class RemoteConfig {
         appName: readOptionalString(json['appName']),
       );
 
+  /// Whether to show the "Powered by Fewchurs" line (Free plan).
   final bool showBranding;
+
+  /// Whether vote counts are hidden on the board.
   final bool hideVoteCounts;
+
+  /// The app's name in the Fewchurs dashboard.
   final String? appName;
 }

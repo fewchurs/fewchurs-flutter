@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:fewchurs_core/fewchurs_core.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'config.dart';

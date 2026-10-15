@@ -1,6 +1,6 @@
 name: fewchurs_core
 description: Pure Dart client for the Fewchurs feature-request API. Models, errors and device identity used by the fewchurs Flutter package.
-version: 1.2.0
+version: 1.2.1
 homepage: https://www.fewchurs.shop
 repository: https://github.com/fewchurs/fewchurs-flutter
 

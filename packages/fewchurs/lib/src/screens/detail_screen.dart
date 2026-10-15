@@ -183,7 +183,8 @@ class _FewchursFeatureDetailState extends State<FewchursFeatureDetail> {
     );
   }
 
-  Widget _body(FeatureDetailController c, bool hideVoteCount, bool allowComments) {
+  Widget _body(
+      FeatureDetailController c, bool hideVoteCount, bool allowComments) {
     final s = FewchursStrings.of(context);
     final t = FewchursThemeData.of(context);
     final feature = c.feature;
@@ -322,8 +323,8 @@ class _FewchursFeatureDetailState extends State<FewchursFeatureDetail> {
         )
       else if (c.commentsError != null)
         Center(
-          child: TextButton(
-              onPressed: c.loadMoreComments, child: Text(s.retry)),
+          child:
+              TextButton(onPressed: c.loadMoreComments, child: Text(s.retry)),
         ),
     ];
   }
