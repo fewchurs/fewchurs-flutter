@@ -24,7 +24,8 @@ final class FewchursInvalidApiKeyException extends FewchursException {
   String get code => 'invalid_key';
 
   @override
-  String get userMessage => _generic;
+  String get userMessage =>
+      'Invalid API key. Check the key in your Fewchurs dashboard.';
 }
 
 final class FewchursValidationException extends FewchursException {

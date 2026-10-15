@@ -1,3 +1,7 @@
+## 1.3.0
+
+- A wrong API key (or a deleted app) now shows "Invalid API key. Check the key in your Fewchurs dashboard." instead of the generic error. Change it with `FewchursStrings(errorInvalidApiKey:)`.
+
 ## 1.2.0
 
 - The board shows only the Top and New tabs. `BoardTab.roadmap` is deprecated and ignored, so existing code still compiles. `FewchursStrings.tabRoadmap` and `roadmapEmptyMessage` are deprecated and unused.

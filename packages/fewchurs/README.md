@@ -44,14 +44,14 @@ dependencies:
     git:
       url: https://github.com/fewchurs/fewchurs-flutter.git
       path: packages/fewchurs
-      ref: v1.2.0
+      ref: v1.3.0
 
 dependency_overrides:
   fewchurs_core:
     git:
       url: https://github.com/fewchurs/fewchurs-flutter.git
       path: packages/fewchurs_core
-      ref: v1.2.0
+      ref: v1.3.0
 ```
 
 Then run:
@@ -516,7 +516,7 @@ Every failure is a subclass of `sealed class FewchursException`, so a `switch` c
 
 | Exception | When | `userMessage` |
 |---|---|---|
-| `FewchursInvalidApiKeyException` | Wrong or inactive key (401, `invalid_key` or `unauthorized`) | "Something went wrong. Try again." A warning with details is also logged for you. |
+| `FewchursInvalidApiKeyException` | Wrong key, or its app was deleted (401, `invalid_key` or `unauthorized`) | "Invalid API key. Check the key in your Fewchurs dashboard." Change it with `FewchursStrings(errorInvalidApiKey:)`. A warning with details is also logged for you. |
 | `FewchursValidationException` | Invalid input (400) | The validation message |
 | `FewchursRateLimitedException` | 15 submissions or 10 comments per device per day (429) | "You've reached today's limit. Try again tomorrow." |
 | `FewchursLimitReachedException` | Rare (402). Plans never block submitting, voting or commenting. | "This board isn't accepting requests right now." |
@@ -555,7 +555,8 @@ Answers for the **Google Play Data safety** form and **Apple privacy labels**:
 | Works in debug, fails in a release APK | Add the Android `INTERNET` permission. |
 | Nothing loads on macOS | Add the `network.client` entitlement to both entitlements files. |
 | Nothing loads on web, CORS error in the console | CORS must be enabled on the Fewchurs server for `/api/v1`. |
-| "Something went wrong" everywhere | Check the API key. Set `logLevel: FewchursLogLevel.debug` to see requests. |
+| "Invalid API key" on the board | Copy the key again from the dashboard and pass it to `Fewchurs.configure(apiKey:)`. If the app was deleted, create a new one. |
+| "Something went wrong" everywhere | Set `logLevel: FewchursLogLevel.debug` to see requests. |
 | Board shows "configure must be called" | Call `Fewchurs.configure(...)` before `runApp`. |
 | Votes reset after reinstalling | Expected with the generated ID. Pass `deviceId:` to keep votes tied to signed-in users. |
 | `No MaterialLocalizations found` in a `CupertinoApp` | The board handles this itself. If you use Fewchurs widgets outside the board, wrap them in a `MaterialApp` or add `DefaultMaterialLocalizations.delegate`. |

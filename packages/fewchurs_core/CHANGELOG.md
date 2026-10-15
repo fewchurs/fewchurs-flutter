@@ -1,3 +1,7 @@
+## 1.2.0
+
+- `FewchursInvalidApiKeyException.userMessage` is now "Invalid API key. Check the key in your Fewchurs dashboard." instead of the generic error.
+
 ## 1.1.0
 
 - The default server is now `https://www.fewchurs.shop/api/v1`. The old `fewchurs.com` address never resolved, so every call failed unless the app passed `baseUrl`.

@@ -10,7 +10,7 @@ import 'json.dart';
 import 'logger.dart';
 import 'models.dart';
 
-const fewchursCoreVersion = '1.1.0';
+const fewchursCoreVersion = '1.2.0';
 
 typedef _Response = ({Map<String, Object?> json, String deviceId});
 

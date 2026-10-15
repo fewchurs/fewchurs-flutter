@@ -70,6 +70,25 @@ void main() {
     expect(find.text('Ideas'), findsOneWidget);
   });
 
+  testWidgets('a wrong API key shows the invalid-key message',
+      (tester) async {
+    Fewchurs.configure(
+      apiKey: 'fr_live_wrong',
+      logLevel: FewchursLogLevel.none,
+      httpClient: MockClient((_) async => http.Response(
+          jsonEncode({
+            'error': {'code': 'invalid_key', 'message': 'Invalid API key'}
+          }),
+          401)),
+    );
+    await tester.pumpWidget(const MaterialApp(home: FewchursBoard()));
+    await tester.pumpAndSettle();
+    expect(
+        find.text('Invalid API key. Check the key in your Fewchurs dashboard.'),
+        findsOneWidget);
+    expect(find.text('Something went wrong. Try again.'), findsNothing);
+  });
+
   testWidgets('ignores the removed Roadmap tab', (tester) async {
     final statuses = <String?>[];
     Fewchurs.configure(

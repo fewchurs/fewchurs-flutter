@@ -85,8 +85,9 @@ void main() {
     expect(await errorFor('limit_reached', 402),
         isA<FewchursLimitReachedException>());
     expect(await errorFor('not_found', 404), isA<FewchursNotFoundException>());
-    expect(await errorFor('unauthorized', 401),
-        isA<FewchursInvalidApiKeyException>());
+    final badKey = await errorFor('unauthorized', 401);
+    expect(badKey, isA<FewchursInvalidApiKeyException>());
+    expect(badKey.userMessage, contains('Invalid API key'));
     expect(await errorFor('forbidden', 403), isA<FewchursUnknownException>());
   });
 

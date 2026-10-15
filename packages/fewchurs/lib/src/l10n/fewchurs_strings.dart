@@ -62,6 +62,8 @@ class FewchursStrings {
     this.submitSuccess = 'Thanks! Your request was submitted.',
     this.tooLong = 'Keep it under {max} characters.',
     this.errorGeneric = 'Something went wrong. Try again.',
+    this.errorInvalidApiKey =
+        'Invalid API key. Check the key in your Fewchurs dashboard.',
     this.errorOffline = "You're offline.",
     this.errorRateLimited = "You've reached today's limit. Try again tomorrow.",
     this.errorLimitReached = "This board isn't accepting requests right now.",
@@ -124,6 +126,9 @@ class FewchursStrings {
   final String submitSuccess;
   final String tooLong;
   final String errorGeneric;
+
+  /// Shown when the API key is wrong, or its app was deleted.
+  final String errorInvalidApiKey;
   final String errorOffline;
   final String errorRateLimited;
   final String errorLimitReached;
@@ -160,7 +165,7 @@ class FewchursStrings {
         FewchursLimitReachedException() => errorLimitReached,
         FewchursNotFoundException() => errorNotFound,
         FewchursNetworkException() => errorOffline,
-        FewchursInvalidApiKeyException() ||
+        FewchursInvalidApiKeyException() => errorInvalidApiKey,
         FewchursServerException() ||
         FewchursUnknownException() =>
           errorGeneric,
