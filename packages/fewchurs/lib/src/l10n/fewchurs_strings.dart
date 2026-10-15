@@ -72,10 +72,12 @@ class FewchursStrings {
   final String boardTitle;
   final String tabTop;
   final String tabNew;
+  @Deprecated('The Roadmap tab was removed. This text is unused.')
   final String tabRoadmap;
   final String submitButton;
   final String emptyTitle;
   final String emptyMessage;
+  @Deprecated('The Roadmap tab was removed. This text is unused.')
   final String roadmapEmptyMessage;
   final String retry;
   final String close;

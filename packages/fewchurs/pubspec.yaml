@@ -1,9 +1,9 @@
 name: fewchurs
 description: A plug-and-play feature-request board for Flutter. List, vote, comment, follow and submit ideas, themed to match your app on every platform.
-version: 1.1.0
+version: 1.2.0
 homepage: https://www.fewchurs.shop
 repository: https://github.com/fewchurs/fewchurs-flutter
-topics: [feedback, feature-requests, roadmap, voting]
+topics: [feedback, feature-requests, voting]
 
 environment:
   sdk: '>=3.0.0 <4.0.0'

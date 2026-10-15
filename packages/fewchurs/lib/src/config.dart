@@ -6,7 +6,14 @@ import 'l10n/fewchurs_strings.dart';
 
 enum FewchursStyle { material, cupertino, adaptive }
 
-enum BoardTab { top, newest, roadmap }
+enum BoardTab {
+  top,
+  newest,
+
+  /// No longer shown. The board ignores it and shows Top and New only.
+  @Deprecated('The Roadmap tab was removed. The board ignores it.')
+  roadmap,
+}
 
 enum EmailField { hidden, optional, required }
 

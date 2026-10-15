@@ -70,6 +70,28 @@ void main() {
     expect(find.text('Ideas'), findsOneWidget);
   });
 
+  testWidgets('ignores the removed Roadmap tab', (tester) async {
+    final statuses = <String?>[];
+    Fewchurs.configure(
+      apiKey: 'fr_test',
+      logLevel: FewchursLogLevel.none,
+      board: const BoardOptions(
+        // ignore: deprecated_member_use_from_same_package
+        tabs: [BoardTab.top, BoardTab.newest, BoardTab.roadmap],
+      ),
+      httpClient: MockClient((req) async {
+        statuses.add(req.url.queryParameters['status']);
+        return http.Response('{"features":[]}', 200);
+      }),
+    );
+    await tester.pumpWidget(const MaterialApp(home: FewchursBoard()));
+    await tester.pumpAndSettle();
+    expect(find.text('Top'), findsOneWidget);
+    expect(find.text('New'), findsOneWidget);
+    expect(find.text('Roadmap'), findsNothing);
+    expect(statuses.whereType<String>(), isEmpty);
+  });
+
   testWidgets('shows the badge when /config fails', (tester) async {
     Fewchurs.configure(
       apiKey: 'fr_test',

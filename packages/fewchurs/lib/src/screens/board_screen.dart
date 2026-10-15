@@ -84,19 +84,17 @@ class _FewchursBoardState extends State<FewchursBoard>
       return;
     }
     final options = _options;
-    _tabs = options.tabs.toSet().toList();
+    // Only Top and New are shown; anything else (the old Roadmap tab) is
+    // ignored.
+    _tabs = options.tabs
+        .where((t) => t == BoardTab.top || t == BoardTab.newest)
+        .toSet()
+        .toList();
     if (_tabs.isEmpty) _tabs = const [BoardTab.top];
 
     for (final tab in _tabs) {
       final controller = Fewchurs.boardController(
         sort: tab == BoardTab.newest ? FeatureSort.newest : FeatureSort.top,
-        statuses: tab == BoardTab.roadmap
-            ? const {
-                FeatureStatus.planned,
-                FeatureStatus.inProgress,
-                FeatureStatus.done
-              }
-            : null,
         showDeclined: options.showDeclined,
         pageSize: options.pageSize,
       );
@@ -204,11 +202,8 @@ class _FewchursBoardState extends State<FewchursBoard>
     }
   }
 
-  String _tabLabel(FewchursStrings s, BoardTab tab) => switch (tab) {
-        BoardTab.top => s.tabTop,
-        BoardTab.newest => s.tabNew,
-        BoardTab.roadmap => s.tabRoadmap,
-      };
+  String _tabLabel(FewchursStrings s, BoardTab tab) =>
+      tab == BoardTab.newest ? s.tabNew : s.tabTop;
 
   @override
   Widget build(BuildContext context) {
@@ -456,9 +451,7 @@ class _BoardTabViewState extends State<_BoardTabView>
                       FewchursMessageView(
                         icon: Icons.lightbulb_outline_rounded,
                         title: s.emptyTitle,
-                        message: widget.tab == BoardTab.roadmap
-                            ? s.roadmapEmptyMessage
-                            : s.emptyMessage,
+                        message: s.emptyMessage,
                       ),
                   const FewchursPoweredBy(),
                 ]);

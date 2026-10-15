@@ -155,16 +155,15 @@ class _BrandedBoard extends StatelessWidget {
         density: FewchursDensity.compact,
       ),
       child: FewchursBoard(
-        title: 'Taskly roadmap',
+        title: 'Taskly ideas',
         options: const BoardOptions(
-          tabs: [BoardTab.roadmap, BoardTab.top],
-          defaultTab: BoardTab.roadmap,
+          tabs: [BoardTab.top, BoardTab.newest],
           submitButton: SubmitButtonPlacement.bottomBar,
         ),
         headerBuilder: (context) => Padding(
           padding: const EdgeInsets.only(bottom: 12),
           child: Text(
-            'Here is what we are working on. Vote to move things up.',
+            'Tell us what to build next. Vote to move things up.',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
         ),

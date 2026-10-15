@@ -44,14 +44,14 @@ dependencies:
     git:
       url: https://github.com/fewchurs/fewchurs-flutter.git
       path: packages/fewchurs
-      ref: v1.1.0
+      ref: v1.2.0
 
 dependency_overrides:
   fewchurs_core:
     git:
       url: https://github.com/fewchurs/fewchurs-flutter.git
       path: packages/fewchurs_core
-      ref: v1.1.0
+      ref: v1.2.0
 ```
 
 Then run:
@@ -129,7 +129,7 @@ class MyApp extends StatelessWidget {
 
 ## 4. Showing the board
 
-You can present the board in three ways. All three share the same features: Top, New and Roadmap tabs, instant voting, comments, follow, submit, pull to refresh and infinite scroll.
+You can present the board in three ways. All three share the same features: Top and New tabs, instant voting, comments, follow, submit, pull to refresh and infinite scroll.
 
 ### As a full-screen page
 
@@ -224,7 +224,7 @@ Fewchurs.configure(
   apiKey: 'fr_live_xxx',                       // required
   style: FewchursStyle.adaptive,               // material (default) | cupertino | adaptive
   board: const BoardOptions(
-    tabs: [BoardTab.top, BoardTab.newest, BoardTab.roadmap],
+    tabs: [BoardTab.top, BoardTab.newest],
     defaultTab: BoardTab.top,
     showDeclined: false,
     allowSubmissions: true,
@@ -236,7 +236,7 @@ Fewchurs.configure(
     maxContentWidth: 720,
     wideLayoutBreakpoint: 840,
   ),
-  strings: const FewchursStrings(boardTitle: 'Ideas & roadmap'),
+  strings: const FewchursStrings(boardTitle: 'Ideas'),
   isSubscriber: () => billing.hasActiveSubscription,  // sync or async
   userEmail: () => auth.currentUser?.email,           // skips the email prompt when following
   deviceId: () async => hashedUserId,                 // see "User identity"
@@ -250,7 +250,7 @@ Fewchurs.configure(
 | Option | Notes |
 |---|---|
 | `style` | `adaptive` uses Cupertino dialogs, spinners and page transitions on iOS and macOS, and Material everywhere else. |
-| `BoardTab.roadmap` | Shows *planned*, *in progress* and *done* requests. |
+| `tabs` | `BoardTab.top` and `BoardTab.newest`. `BoardTab.roadmap` is deprecated and ignored. |
 | `showDeclined` | Declined requests are hidden unless this is `true`. |
 | `userEmail` | If set, **Follow** uses this email right away. Otherwise the user is asked once, and can choose to have it remembered on the device. |
 
@@ -316,7 +316,7 @@ Override any text:
 Fewchurs.configure(
   apiKey: '…',
   strings: const FewchursStrings(
-    boardTitle: 'Ideas & roadmap',
+    boardTitle: 'Ideas',
     submitButton: 'Suggest an idea',
     emptyTitle: 'No ideas yet',
     votesCount: '{count} votes',
@@ -417,7 +417,7 @@ class _MyIdeasPageState extends State<MyIdeasPage> {
 | `insertAtTop(f)` / `replace(f)` / `remove(id)` | Change the list yourself. |
 | `actionErrors` | Stream of errors from votes and refreshes, e.g. to show a snack bar. |
 
-Filtered board, for example a roadmap widget:
+Filtered list, for example a "coming soon" widget:
 
 ```dart
 Fewchurs.boardController(statuses: {FeatureStatus.planned, FeatureStatus.inProgress});

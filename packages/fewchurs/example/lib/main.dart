@@ -12,7 +12,7 @@ void configure({FewchursStyle style = FewchursStyle.material}) {
     style: style,
     logLevel: FewchursLogLevel.debug,
     board: const BoardOptions(
-      tabs: [BoardTab.top, BoardTab.newest, BoardTab.roadmap],
+      tabs: [BoardTab.top, BoardTab.newest],
     ),
   );
 }
@@ -123,7 +123,7 @@ class ThemedBoardPage extends StatelessWidget {
         statusColors: {FeatureStatus.done: Color(0xFF16A34A)},
       ),
       child: FewchursBoard(
-        title: 'Ideas & roadmap',
+        title: 'Ideas',
         options: BoardOptions(
           tabs: [BoardTab.top, BoardTab.newest],
           submitButton: SubmitButtonPlacement.bottomBar,

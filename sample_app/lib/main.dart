@@ -17,7 +17,7 @@ void main() {
     isSubscriber: () => app.isPro.value,
     userEmail: () => app.email.value,
     board: const BoardOptions(
-      tabs: [BoardTab.top, BoardTab.newest, BoardTab.roadmap],
+      tabs: [BoardTab.top, BoardTab.newest],
       emailField: EmailField.optional,
     ),
     strings: const FewchursStrings(
