@@ -1,3 +1,7 @@
+## 1.2.2
+
+- Moves to the new domain: the default server is now `https://www.fewchurs.com/api/v1`.
+
 ## 1.2.1
 
 - Documented the public API and added an example, ready for pub.dev.

@@ -1,3 +1,7 @@
+## 1.5.2
+
+- Moves to the new domain: uses `fewchurs_core` 1.2.2, whose default server is `https://www.fewchurs.com/api/v1`. Links point to `https://www.fewchurs.com`.
+
 ## 1.5.1
 
 - Text fields use the filled style, so floating labels sit inside the field instead of above it. Focus shows a thin underline.

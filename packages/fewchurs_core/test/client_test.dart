@@ -92,7 +92,7 @@ void main() {
   });
 
   test('defaults to the live Fewchurs server', () async {
-    expect(FewchursClient.defaultBaseUrl, 'https://www.fewchurs.shop/api/v1');
+    expect(FewchursClient.defaultBaseUrl, 'https://www.fewchurs.com/api/v1');
     late Uri url;
     final client = FewchursClient(
       apiKey: 'k',
@@ -104,7 +104,7 @@ void main() {
       }),
     );
     await client.getConfig();
-    expect(url.toString(), 'https://www.fewchurs.shop/api/v1/config');
+    expect(url.toString(), 'https://www.fewchurs.com/api/v1/config');
   });
 
   test('getFeature fetches one request', () async {

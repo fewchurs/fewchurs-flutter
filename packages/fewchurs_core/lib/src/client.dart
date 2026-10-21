@@ -11,7 +11,7 @@ import 'logger.dart';
 import 'models.dart';
 
 /// Version of this package, sent in the SDK header.
-const fewchursCoreVersion = '1.2.1';
+const fewchursCoreVersion = '1.2.2';
 
 typedef _Response = ({Map<String, Object?> json, String deviceId});
 
@@ -36,7 +36,7 @@ class FewchursClient {
         _ownsHttp = httpClient == null;
 
   /// The live Fewchurs API.
-  static const defaultBaseUrl = 'https://www.fewchurs.shop/api/v1';
+  static const defaultBaseUrl = 'https://www.fewchurs.com/api/v1';
 
   static const titleMin = 3;
   static const titleMax = 100;

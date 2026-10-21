@@ -3,7 +3,7 @@
 [![pub package](https://img.shields.io/pub/v/fewchurs.svg)](https://pub.dev/packages/fewchurs)
 [![CI](https://github.com/fewchurs/fewchurs-flutter/actions/workflows/ci.yml/badge.svg)](https://github.com/fewchurs/fewchurs-flutter/actions/workflows/ci.yml)
 
-Add a feature-request board to your Flutter app with one dependency and one line of code. Users browse ideas, vote, comment, follow requests and suggest new ones, and you see it all in the [Fewchurs dashboard](https://www.fewchurs.shop).
+Add a feature-request board to your Flutter app with one dependency and one line of code. Users browse ideas, vote, comment, follow requests and suggest new ones, and you see it all in the [Fewchurs dashboard](https://www.fewchurs.com).
 
 <p>
   <img src="https://raw.githubusercontent.com/fewchurs/fewchurs-flutter/main/packages/fewchurs/doc/screenshots/board.png" width="240" alt="The board with votes and statuses">
@@ -48,7 +48,7 @@ Requires **Flutter 3.10+** and **Dart 3.0+**.
 
 ### Get an API key
 
-Open the [Fewchurs dashboard](https://www.fewchurs.shop), select your app and copy the API key (`fr_live_…`) from its settings. The key is shown only once. If you lose it, generate a new one.
+Open the [Fewchurs dashboard](https://www.fewchurs.com), select your app and copy the API key (`fr_live_…`) from its settings. The key is shown only once. If you lose it, generate a new one.
 
 ### Add the package
 
@@ -252,7 +252,7 @@ Fewchurs.configure(
   deviceId: () async => hashedUserId,                 // see "User identity"
   deviceIdStore: MySecureStore(),                     // custom storage for the generated ID
   httpClient: myHttpClient,                           // package:http Client (logging, proxy, pinning)
-  baseUrl: 'https://staging.fewchurs.shop/api/v1',    // override for staging
+  baseUrl: 'https://staging.fewchurs.com/api/v1',    // override for staging
   logLevel: FewchursLogLevel.error,                   // none | error | debug (never logs the key)
 );
 ```
