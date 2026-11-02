@@ -19,7 +19,9 @@ sealed class FewchursException implements Exception {
 
 const _generic = 'Something went wrong. Try again.';
 
-/// The API key is wrong, or its app was deleted (401).
+/// The API key is wrong, its app was deleted (401), its app is made for
+/// another platform (403, `wrong_platform`), or this app's ID isn't saved on
+/// the key's app (403, `wrong_app`). [message] says what to fix.
 final class FewchursInvalidApiKeyException extends FewchursException {
   const FewchursInvalidApiKeyException(super.message, {super.statusCode});
 

@@ -89,6 +89,112 @@ void main() {
     expect(badKey, isA<FewchursInvalidApiKeyException>());
     expect(badKey.userMessage, contains('Invalid API key'));
     expect(await errorFor('forbidden', 403), isA<FewchursUnknownException>());
+    expect(await errorFor('wrong_app', 403),
+        isA<FewchursInvalidApiKeyException>());
+  });
+
+  test('sends the app ID on every endpoint', () async {
+    final seen = <String, String?>{};
+    final client = FewchursClient(
+      apiKey: 'fr_live_test',
+      appId: () async => ' com.company.app ',
+      identity: DeviceIdentity(resolver: () => 'device-1'),
+      logger: const FewchursLogger(level: FewchursLogLevel.none),
+      httpClient: MockClient((req) async {
+        seen['${req.method} ${req.url.path}'] =
+            req.headers['X-Fewchurs-App-Id'];
+        final path = req.url.path;
+        if (path.endsWith('/config')) return jsonResponse({});
+        if (path.endsWith('/vote')) {
+          return jsonResponse({'upvoteCount': 1, 'hasVoted': true});
+        }
+        if (path.endsWith('/follow')) return jsonResponse({'ok': true});
+        if (path.endsWith('/comments') && req.method == 'GET') {
+          return jsonResponse({'comments': []});
+        }
+        if (path.endsWith('/comments')) {
+          return jsonResponse({
+            'id': 'c1',
+            'featureId': 'f1',
+            'text': 'Nice',
+            'createdAt': '2026-01-01T00:00:00.000Z',
+          });
+        }
+        if (path.endsWith('/features') && req.method == 'GET') {
+          return jsonResponse({'features': []});
+        }
+        return jsonResponse(featureJson('f1'));
+      }),
+    );
+    await client.getConfig();
+    await client.listFeatures();
+    await client.getFeature('f1');
+    await client.submitFeature(title: 'Dark mode');
+    await client.vote('f1');
+    await client.unvote('f1');
+    await client.follow('f1', email: 'a@b.com');
+    await client.unfollow('f1');
+    await client.listComments('f1');
+    await client.addComment('f1', text: 'Nice');
+    expect(seen, hasLength(10));
+    expect(seen.values, everyElement('com.company.app'));
+  });
+
+  test('sends no app ID when it is not set or fails', () async {
+    for (final appId in <String? Function()?>[
+      null,
+      () => null,
+      () => '  ',
+      () => throw StateError('no plugin'),
+    ]) {
+      late http.Request captured;
+      final client = FewchursClient(
+        apiKey: 'k',
+        appId: appId,
+        identity: DeviceIdentity(resolver: () => 'd'),
+        logger: const FewchursLogger(level: FewchursLogLevel.none),
+        httpClient: MockClient((req) async {
+          captured = req;
+          return jsonResponse({});
+        }),
+      );
+      await client.getConfig();
+      expect(captured.headers.containsKey('X-Fewchurs-App-Id'), isFalse);
+    }
+  });
+
+  test('wrong_app is an invalid key error, keeps the message, no retry',
+      () async {
+    const message = 'This API key is not set up for com.other.app. '
+        'Add it to your app in the Fewchurs dashboard.';
+    var calls = 0;
+    final logs = <String>[];
+    final client = FewchursClient(
+      apiKey: 'fr_live_test',
+      appId: () => 'com.other.app',
+      identity: DeviceIdentity(resolver: () => 'd'),
+      retryDelay: Duration.zero,
+      logger: FewchursLogger(level: FewchursLogLevel.error, sink: logs.add),
+      httpClient: MockClient((_) async {
+        calls++;
+        return jsonResponse({
+          'error': {'code': 'wrong_app', 'message': message}
+        }, 403);
+      }),
+    );
+    late FewchursException error;
+    try {
+      await client.listFeatures();
+      fail('expected exception');
+    } on FewchursException catch (e) {
+      error = e;
+    }
+    expect(error, isA<FewchursInvalidApiKeyException>());
+    expect(error.message, message);
+    expect(error.statusCode, 403);
+    expect(error.code, 'invalid_key');
+    expect(calls, 1);
+    expect(logs.where((l) => l.contains(message)), hasLength(1));
   });
 
   test('defaults to the live Fewchurs server', () async {

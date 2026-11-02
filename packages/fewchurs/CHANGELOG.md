@@ -1,3 +1,12 @@
+## 1.6.0
+
+- Sends the app ID so your API key only works in your own apps. Handles `wrong_app`.
+- On Android and iOS the package name or Bundle ID is read with `package_info_plus` and sent as `X-Fewchurs-App-Id`. On web the browser sends `Origin`, so nothing extra is sent.
+- `wrong_app` shows the invalid API key message, and the log says which ID to add in the dashboard.
+- Handles `wrong_platform`: the API key belongs to an app made for another platform.
+- Uses `fewchurs_core` 1.3.0.
+- Widget tests that show the board need `PackageInfo.setMockInitialValues(...)`, like `SharedPreferences.setMockInitialValues({})`. The board shows the invalid API key message, and the log names the SDK the key is for.
+
 ## 1.5.2
 
 - Moves to the new domain: uses `fewchurs_core` 1.2.2, whose default server is `https://www.fewchurs.com/api/v1`. Links point to `https://www.fewchurs.com`.

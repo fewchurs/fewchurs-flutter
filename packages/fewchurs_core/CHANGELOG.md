@@ -1,3 +1,10 @@
+## 1.3.0
+
+- Sends the app ID so your API key only works in your own apps. Handles `wrong_app`.
+- New `FewchursClient(appId:)`: returns your Bundle ID, package name or domain, sent as `X-Fewchurs-App-Id` on every request. Leave it unset in browsers, which send `Origin`.
+- `wrong_app` (403) throws `FewchursInvalidApiKeyException` (not retried), and `message` names the ID to add in the dashboard.
+- Handles `wrong_platform`: the API key belongs to an app made for another platform. It throws `FewchursInvalidApiKeyException` (not retried), and `message` says which SDK the key is for.
+
 ## 1.2.2
 
 - Moves to the new domain: the default server is now `https://www.fewchurs.com/api/v1`.

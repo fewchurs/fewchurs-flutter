@@ -11,7 +11,7 @@ import 'logger.dart';
 import 'models.dart';
 
 /// Version of this package, sent in the SDK header.
-const fewchursCoreVersion = '1.2.2';
+const fewchursCoreVersion = '1.3.0';
 
 typedef _Response = ({Map<String, Object?> json, String deviceId});
 
@@ -25,6 +25,7 @@ class FewchursClient {
     DeviceIdentity? identity,
     this.sdkHeader = 'dart/$fewchursCoreVersion',
     this.localeProvider,
+    this.appId,
     this.logger = const FewchursLogger(),
     this.timeout = const Duration(seconds: 15),
     this.maxRetries = 2,
@@ -55,6 +56,11 @@ class FewchursClient {
   final DeviceIdentity identity;
   final String sdkHeader;
   final String? Function()? localeProvider;
+
+  /// Your Bundle ID, package name or domain, sent as `X-Fewchurs-App-Id` so
+  /// the API key only works in your own apps. Not needed in browsers, which
+  /// send `Origin`.
+  final FutureOr<String?> Function()? appId;
   final FewchursLogger logger;
   final Duration timeout;
   final int maxRetries;
@@ -238,6 +244,7 @@ class FewchursClient {
     bool retry = false,
   }) async {
     final deviceId = await identity.id;
+    final app = await _readAppId();
     var uri = Uri.parse('$baseUrl$path');
     if (query != null && query.isNotEmpty) {
       uri = uri.replace(queryParameters: query);
@@ -250,6 +257,7 @@ class FewchursClient {
       'Authorization': 'Bearer $apiKey',
       'X-Device-Id': deviceId,
       'X-Fewchurs-Sdk': sdkHeader,
+      if (app != null) 'X-Fewchurs-App-Id': app,
       'Accept': 'application/json',
       if (body != null) 'Content-Type': 'application/json; charset=utf-8',
       if (locale != null && locale.isNotEmpty) 'Accept-Language': locale,
@@ -320,7 +328,7 @@ class FewchursClient {
       if (error['message'] is String) message = error['message'] as String;
     }
     return switch ((code, status)) {
-      ('invalid_key' || 'unauthorized', _) ||
+      ('invalid_key' || 'unauthorized' || 'wrong_platform' || 'wrong_app', _) ||
       (null, 401) =>
         FewchursInvalidApiKeyException(message, statusCode: status),
       ('validation_failed' || 'missing_device_id', _) ||
@@ -346,10 +354,19 @@ class FewchursClient {
     };
   }
 
+  Future<String?> _readAppId() async {
+    try {
+      final id = (await appId?.call())?.trim();
+      if (id != null && id.isNotEmpty) return id;
+    } catch (_) {}
+    return null;
+  }
+
   void _report(FewchursException e) {
     if (e is FewchursInvalidApiKeyException) {
       logger.error('Invalid or inactive API key. Check the key passed to '
-          'Fewchurs.configure() against your Fewchurs dashboard.');
+          'Fewchurs.configure() against your Fewchurs dashboard. '
+          'Server said: ${e.message}');
     } else {
       logger.error(e.toString());
     }

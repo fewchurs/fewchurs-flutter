@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -13,6 +14,13 @@ void main() {
   setUp(() {
     requests = 0;
     SharedPreferences.setMockInitialValues({});
+    PackageInfo.setMockInitialValues(
+      appName: 'App',
+      packageName: 'com.company.app',
+      version: '1.0.0',
+      buildNumber: '1',
+      buildSignature: '',
+    );
     Fewchurs.configure(
       apiKey: 'fr_test',
       logLevel: FewchursLogLevel.none,

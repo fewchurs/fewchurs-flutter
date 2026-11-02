@@ -50,6 +50,8 @@ Requires **Flutter 3.10+** and **Dart 3.0+**.
 
 Open the [Fewchurs dashboard](https://www.fewchurs.com), select your app and copy the API key (`fr_live_…`) from its settings. The key is shown only once. If you lose it, generate a new one.
 
+Add your Bundle ID / package name / domain to your app in the Fewchurs dashboard. The API key only works there. The SDK sends the ID for you: the Bundle ID on iOS and the package name on Android (debug builds with `applicationIdSuffix` are allowed too). On web the browser sends the domain itself.
+
 ### Add the package
 
 ```bash
@@ -528,14 +530,14 @@ Every failure is a subclass of `sealed class FewchursException`, so a `switch` c
 
 | Exception | When | `userMessage` |
 |---|---|---|
-| `FewchursInvalidApiKeyException` | Wrong key, or its app was deleted (401, `invalid_key` or `unauthorized`) | "Invalid API key. Check the key in your Fewchurs dashboard." Change it with `FewchursStrings(errorInvalidApiKey:)`. A warning with details is also logged for you. |
+| `FewchursInvalidApiKeyException` | Wrong key, or its app was deleted (401, `invalid_key` or `unauthorized`), or the key belongs to an app made for another platform (403, `wrong_platform`; `message` names the right SDK), or this app's Bundle ID, package name or domain isn't saved on the key's app (403, `wrong_app`; `message` names the ID to add) | "Invalid API key. Check the key in your Fewchurs dashboard." Change it with `FewchursStrings(errorInvalidApiKey:)`. A warning with details is also logged for you. |
 | `FewchursValidationException` | Invalid input (400) | The validation message |
 | `FewchursRateLimitedException` | 15 submissions or 10 comments per device per day (429) | "You've reached today's limit. Try again tomorrow." |
 | `FewchursLimitReachedException` | Rare (402). Plans never block submitting, voting or commenting. | "This board isn't accepting requests right now." |
 | `FewchursNotFoundException` | Request was deleted (404) | "This request no longer exists." |
 | `FewchursServerException` | Server error (5xx) | "Something went wrong. Try again." |
 | `FewchursNetworkException` | Offline or timed out | "You're offline." |
-| `FewchursUnknownException` | Forbidden (403) or an unexpected response | "Something went wrong. Try again." |
+| `FewchursUnknownException` | Other forbidden errors (403) or an unexpected response | "Something went wrong. Try again." |
 
 Reads and votes are retried twice on network or server errors. New content (submissions and comments) is never retried automatically, so it can't be posted twice. Requests time out after 15 seconds.
 
@@ -545,7 +547,7 @@ The built-in UI never crashes your app. If `configure` hasn't been called, the b
 
 ## 14. Privacy and security
 
-- **The API key can be published by design.** It ships inside every app binary and web page. Protection happens on the server with per-device limits.
+- **The API key can be published by design.** It ships inside every app binary and web page. Protection happens on the server with per-device limits, and the key only works from the Bundle ID, package name or domain saved on your app.
 - Requests use HTTPS only. The key is never logged.
 - The key's owner controls the "Powered by Fewchurs" footer. It disappears automatically on the Starter and Pro plans.
 
@@ -568,6 +570,8 @@ Answers for the **Google Play Data safety** form and **Apple privacy labels**:
 | Nothing loads on macOS | Add the `network.client` entitlement to both entitlements files. |
 | Nothing loads on web, CORS error in the console | Check that you didn't pass a custom `baseUrl`. The default server allows web apps. |
 | "Invalid API key" on the board | Copy the key again from the dashboard and pass it to `Fewchurs.configure(apiKey:)`. If the app was deleted, create a new one. |
+| "Invalid API key" and the log says the key is not set up for an ID | Add that Bundle ID, package name or domain to your app in the Fewchurs dashboard. |
+| Board keeps loading in your widget tests | Call `PackageInfo.setMockInitialValues(...)` and `SharedPreferences.setMockInitialValues({})` in `setUp`. |
 | "Something went wrong" everywhere | Set `logLevel: FewchursLogLevel.debug` to see requests. |
 | Board shows "configure must be called" | Call `Fewchurs.configure(...)` before `runApp`. |
 | Votes reset after reinstalling | Expected with the generated ID. Pass `deviceId:` to keep votes tied to signed-in users. |

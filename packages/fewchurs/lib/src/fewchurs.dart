@@ -7,6 +7,7 @@ import 'package:fewchurs_core/fewchurs_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:package_info_plus/package_info_plus.dart';
 
 import 'config.dart';
 import 'controllers/board_controller.dart';
@@ -19,7 +20,7 @@ import 'screens/board_screen.dart';
 import 'theme/fewchurs_theme.dart';
 import 'widgets/adaptive.dart';
 
-const fewchursVersion = '1.5.2';
+const fewchursVersion = '1.6.0';
 
 /// Entry point: call [configure] once in `main()`, then [showBoard],
 /// [showBoardSheet] or embed a [FewchursBoard].
@@ -54,6 +55,7 @@ class Fewchurs {
       ),
       sdkHeader: 'flutter/$fewchursVersion (${_platformName()})',
       localeProvider: () => PlatformDispatcher.instance.locale.toLanguageTag(),
+      appId: _appId,
       logger: logger,
       onEvent: _rt.emit,
     );
@@ -204,6 +206,15 @@ class Fewchurs {
   /// Forgets the configuration. Mainly for tests.
   @visibleForTesting
   static void reset() => _rt.reset();
+
+  static Future<String?> _appId() async {
+    if (kIsWeb) return null;
+    if (defaultTargetPlatform != TargetPlatform.iOS &&
+        defaultTargetPlatform != TargetPlatform.android) {
+      return null;
+    }
+    return (await PackageInfo.fromPlatform()).packageName;
+  }
 
   static String _platformName() =>
       kIsWeb ? 'web' : defaultTargetPlatform.name.toLowerCase();
