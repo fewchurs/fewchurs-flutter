@@ -23,14 +23,23 @@ const _generic = 'Something went wrong. Try again.';
 /// another platform (403, `wrong_platform`), or this app's ID isn't saved on
 /// the key's app (403, `wrong_app`). [message] says what to fix.
 final class FewchursInvalidApiKeyException extends FewchursException {
-  const FewchursInvalidApiKeyException(super.message, {super.statusCode});
+  const FewchursInvalidApiKeyException(
+    super.message, {
+    super.statusCode,
+    this.isWrongApp = false,
+  });
+
+  /// The key is real, but this app's ID isn't saved on the key's app.
+  /// [userMessage] is then the server's message, which names the ID to add.
+  final bool isWrongApp;
 
   @override
   String get code => 'invalid_key';
 
   @override
-  String get userMessage =>
-      'Invalid API key. Check the key in your Fewchurs dashboard.';
+  String get userMessage => isWrongApp
+      ? message
+      : 'Invalid API key. Check the key in your Fewchurs dashboard.';
 }
 
 /// The input was rejected (400).

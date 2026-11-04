@@ -1,3 +1,8 @@
+## 1.4.0
+
+- `wrong_app`: `FewchursInvalidApiKeyException.userMessage` is now the server's message, which names the ID to add. New `isWrongApp` tells this case apart. Other invalid key errors keep their message.
+- Logs a warning once when the app ID can't be read, instead of leaving it out silently. This usually means the app needs a full restart after adding the SDK.
+
 ## 1.3.0
 
 - Sends the app ID so your API key only works in your own apps. Handles `wrong_app`.

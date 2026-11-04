@@ -88,6 +88,9 @@ void main() {
     final badKey = await errorFor('unauthorized', 401);
     expect(badKey, isA<FewchursInvalidApiKeyException>());
     expect(badKey.userMessage, contains('Invalid API key'));
+    expect((badKey as FewchursInvalidApiKeyException).isWrongApp, isFalse);
+    expect((await errorFor('wrong_platform', 403)).userMessage,
+        contains('Invalid API key'));
     expect(await errorFor('forbidden', 403), isA<FewchursUnknownException>());
     expect(await errorFor('wrong_app', 403),
         isA<FewchursInvalidApiKeyException>());
@@ -163,6 +166,22 @@ void main() {
     }
   });
 
+  test('warns once when the app ID cannot be read', () async {
+    final logs = <String>[];
+    final client = FewchursClient(
+      apiKey: 'k',
+      appId: () => throw StateError('no plugin'),
+      identity: DeviceIdentity(resolver: () => 'd'),
+      logger: FewchursLogger(level: FewchursLogLevel.error, sink: logs.add),
+      httpClient: MockClient((_) async => jsonResponse({})),
+    );
+    await client.getConfig(refresh: true);
+    await client.getConfig(refresh: true);
+    expect(logs, hasLength(1));
+    expect(logs.single, contains('Could not read the app ID'));
+    expect(logs.single, contains('no plugin'));
+  });
+
   test('wrong_app is an invalid key error, keeps the message, no retry',
       () async {
     const message = 'This API key is not set up for com.other.app. '
@@ -193,6 +212,8 @@ void main() {
     expect(error.message, message);
     expect(error.statusCode, 403);
     expect(error.code, 'invalid_key');
+    expect(error.userMessage, message);
+    expect((error as FewchursInvalidApiKeyException).isWrongApp, isTrue);
     expect(calls, 1);
     expect(logs.where((l) => l.contains(message)), hasLength(1));
   });

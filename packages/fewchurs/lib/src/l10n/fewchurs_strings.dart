@@ -165,6 +165,7 @@ class FewchursStrings {
         FewchursLimitReachedException() => errorLimitReached,
         FewchursNotFoundException() => errorNotFound,
         FewchursNetworkException() => errorOffline,
+        FewchursInvalidApiKeyException(isWrongApp: true) => e.message,
         FewchursInvalidApiKeyException() => errorInvalidApiKey,
         FewchursServerException() || FewchursUnknownException() => errorGeneric,
       };

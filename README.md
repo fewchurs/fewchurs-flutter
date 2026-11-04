@@ -530,7 +530,7 @@ Every failure is a subclass of `sealed class FewchursException`, so a `switch` c
 
 | Exception | When | `userMessage` |
 |---|---|---|
-| `FewchursInvalidApiKeyException` | Wrong key, or its app was deleted (401, `invalid_key` or `unauthorized`), or the key belongs to an app made for another platform (403, `wrong_platform`; `message` names the right SDK), or this app's Bundle ID, package name or domain isn't saved on the key's app (403, `wrong_app`; `message` names the ID to add) | "Invalid API key. Check the key in your Fewchurs dashboard." Change it with `FewchursStrings(errorInvalidApiKey:)`. A warning with details is also logged for you. |
+| `FewchursInvalidApiKeyException` | Wrong key, or its app was deleted (401, `invalid_key` or `unauthorized`), or the key belongs to an app made for another platform (403, `wrong_platform`; `message` names the right SDK), or this app's Bundle ID, package name or domain isn't saved on the key's app (403, `wrong_app`; `message` names the ID to add) | "Invalid API key. Check the key in your Fewchurs dashboard." Change it with `FewchursStrings(errorInvalidApiKey:)`. A warning with details is also logged for you. For `wrong_app` it's the server's message instead, and `isWrongApp` is `true`. |
 | `FewchursValidationException` | Invalid input (400) | The validation message |
 | `FewchursRateLimitedException` | 15 submissions or 10 comments per device per day (429) | "You've reached today's limit. Try again tomorrow." |
 | `FewchursLimitReachedException` | Rare (402). Plans never block submitting, voting or commenting. | "This board isn't accepting requests right now." |
@@ -570,7 +570,7 @@ Answers for the **Google Play Data safety** form and **Apple privacy labels**:
 | Nothing loads on macOS | Add the `network.client` entitlement to both entitlements files. |
 | Nothing loads on web, CORS error in the console | Check that you didn't pass a custom `baseUrl`. The default server allows web apps. |
 | "Invalid API key" on the board | Copy the key again from the dashboard and pass it to `Fewchurs.configure(apiKey:)`. If the app was deleted, create a new one. |
-| "Invalid API key" and the log says the key is not set up for an ID | Add that Bundle ID, package name or domain to your app in the Fewchurs dashboard. |
+| "This API key is not set up for …" on the board | Add that Bundle ID, package name or domain to your app in the Fewchurs dashboard. |
 | Board keeps loading in your widget tests | Call `PackageInfo.setMockInitialValues(...)` and `SharedPreferences.setMockInitialValues({})` in `setUp`. |
 | "Something went wrong" everywhere | Set `logLevel: FewchursLogLevel.debug` to see requests. |
 | Board shows "configure must be called" | Call `Fewchurs.configure(...)` before `runApp`. |

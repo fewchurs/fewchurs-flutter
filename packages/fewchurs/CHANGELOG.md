@@ -1,3 +1,9 @@
+## 1.7.0
+
+- When an API key isn't set up for this app (`wrong_app`), the board shows the server's message, which names the ID to add: "This API key is not set up for com.other.app. Add it to your app in the Fewchurs dashboard." Other invalid key errors still show `errorInvalidApiKey`.
+- Logs a warning once when the app ID can't be read. This usually means the app needs a full restart after adding the SDK.
+- Uses `fewchurs_core` 1.4.0.
+
 ## 1.6.0
 
 - Sends the app ID so your API key only works in your own apps. Handles `wrong_app`.

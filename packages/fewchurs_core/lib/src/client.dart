@@ -11,7 +11,7 @@ import 'logger.dart';
 import 'models.dart';
 
 /// Version of this package, sent in the SDK header.
-const fewchursCoreVersion = '1.3.0';
+const fewchursCoreVersion = '1.4.0';
 
 typedef _Response = ({Map<String, Object?> json, String deviceId});
 
@@ -70,6 +70,7 @@ class FewchursClient {
   final http.Client _http;
   final bool _ownsHttp;
   Future<RemoteConfig>? _config;
+  bool _warnedAppId = false;
 
   /// Server settings for this app, cached until [refresh] is `true`.
   Future<RemoteConfig> getConfig({bool refresh = false}) {
@@ -328,7 +329,9 @@ class FewchursClient {
       if (error['message'] is String) message = error['message'] as String;
     }
     return switch ((code, status)) {
-      ('invalid_key' || 'unauthorized' || 'wrong_platform' || 'wrong_app', _) ||
+      ('wrong_app', _) => FewchursInvalidApiKeyException(message,
+          statusCode: status, isWrongApp: true),
+      ('invalid_key' || 'unauthorized' || 'wrong_platform', _) ||
       (null, 401) =>
         FewchursInvalidApiKeyException(message, statusCode: status),
       ('validation_failed' || 'missing_device_id', _) ||
@@ -358,7 +361,13 @@ class FewchursClient {
     try {
       final id = (await appId?.call())?.trim();
       if (id != null && id.isNotEmpty) return id;
-    } catch (_) {}
+    } catch (e) {
+      if (!_warnedAppId) {
+        _warnedAppId = true;
+        logger.error('Could not read the app ID, so it was not sent. If you '
+            'just added Fewchurs, stop the app and run it again. Error: $e');
+      }
+    }
     return null;
   }
 

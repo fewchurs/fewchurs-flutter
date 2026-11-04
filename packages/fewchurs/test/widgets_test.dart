@@ -79,6 +79,27 @@ void main() {
     expect(find.text('Ideas'), findsOneWidget);
   });
 
+  testWidgets('a key not set up for this app shows the server message',
+      (tester) async {
+    const message = 'This API key is not set up for com.other.app. '
+        'Add it to your app in the Fewchurs dashboard.';
+    Fewchurs.configure(
+      apiKey: 'fr_live_other',
+      logLevel: FewchursLogLevel.none,
+      httpClient: MockClient((_) async => http.Response(
+          jsonEncode({
+            'error': {'code': 'wrong_app', 'message': message}
+          }),
+          403)),
+    );
+    await tester.pumpWidget(const MaterialApp(home: FewchursBoard()));
+    await tester.pumpAndSettle();
+    expect(find.text(message), findsOneWidget);
+    expect(
+        find.text('Invalid API key. Check the key in your Fewchurs dashboard.'),
+        findsNothing);
+  });
+
   testWidgets('a wrong API key shows the invalid-key message', (tester) async {
     Fewchurs.configure(
       apiKey: 'fr_live_wrong',
